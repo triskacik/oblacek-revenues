@@ -59,19 +59,19 @@ Mirrors `/Users/tomastr/React/benefit-ng-react` (Tomáš reviews both; keep them
 doubt, copy the pattern from there (its `CLAUDE.md` is the detailed reference) — minus tenants, MSAL, Orval
 and i18n.
 
-| Area | Choice |
-|------|--------|
-| Runtime | React 19, TypeScript (`strict`, `verbatimModuleSyntax`) |
-| Bundler | Vite, path alias `@/` → `src/`, React Compiler (`babel-plugin-react-compiler`) |
-| Routing | TanStack Router **file-based** (`src/routes`, generated `src/routeTree.gen.ts`) |
-| Data | Supabase (`@supabase/supabase-js`) + TanStack Query; no custom backend |
-| DB types | `supabase gen types typescript` → `src/types/supabase.gen.ts` |
-| Forms | react-hook-form + Zod 4 + `@hookform/resolvers` + `HookForm` / `HF*` |
-| UI | Tailwind CSS v4 + shadcn **new-york / zinc** (Radix) + lucide-react |
-| Charts | recharts via shadcn `Chart` (load the `dataviz` skill before writing chart code) |
-| Dates | date-fns with `cs` locale; weeks are ISO (Mon–Sun) |
-| Toasts | Sonner, **only** via `@/lib/toast` |
-| Auth | Supabase Auth, Google OAuth, email allowlist enforced by RLS |
+| Area     | Choice                                                                           |
+| -------- | -------------------------------------------------------------------------------- |
+| Runtime  | React 19, TypeScript (`strict`, `verbatimModuleSyntax`)                          |
+| Bundler  | Vite, path alias `@/` → `src/`, React Compiler (`babel-plugin-react-compiler`)   |
+| Routing  | TanStack Router **file-based** (`src/routes`, generated `src/routeTree.gen.ts`)  |
+| Data     | Supabase (`@supabase/supabase-js`) + TanStack Query; no custom backend           |
+| DB types | `supabase gen types typescript` → `src/types/supabase.gen.ts`                    |
+| Forms    | react-hook-form + Zod 4 + `@hookform/resolvers` + `HookForm` / `HF*`             |
+| UI       | Tailwind CSS v4 + shadcn **new-york / zinc** (Radix) + lucide-react              |
+| Charts   | recharts via shadcn `Chart` (load the `dataviz` skill before writing chart code) |
+| Dates    | date-fns with `cs` locale; weeks are ISO (Mon–Sun)                               |
+| Toasts   | Sonner, **only** via `@/lib/toast`                                               |
+| Auth     | Supabase Auth, Google OAuth, email allowlist enforced by RLS                     |
 
 No test stack unless asked. Money/week logic lives in pure functions in `src/utils/` so it is easy to review.
 
@@ -115,14 +115,14 @@ supabase/
 docs/DESIGN.md      product spec
 ```
 
-| Kind | Convention |
-|------|------------|
-| Page / feature component | `const X = (...) =>` + **default export** |
-| `ui/` primitives | **named** exports |
-| Props | local `type Props = { ... }` |
-| Hooks | `useX`, default export |
-| Barrel | `export { default as X } from './X/X'` |
-| Imports | `@/` across features, relative inside a feature, `import type` for types |
+| Kind                     | Convention                                                               |
+| ------------------------ | ------------------------------------------------------------------------ |
+| Page / feature component | `const X = (...) =>` + **default export**                                |
+| `ui/` primitives         | **named** exports                                                        |
+| Props                    | local `type Props = { ... }`                                             |
+| Hooks                    | `useX`, default export                                                   |
+| Barrel                   | `export { default as X } from './X/X'`                                   |
+| Imports                  | `@/` across features, relative inside a feature, `import type` for types |
 
 ## Formatting
 
@@ -137,7 +137,23 @@ Comments explain **why**, not what.
 
 ## Commands
 
-_To be filled in when the project is scaffolded._
+```bash
+npm install
+npm run start        # vite dev server on :3000 (needs .env.local, see .env.example)
+npm run build        # vite build && tsc
+npm run compile      # tsc --noEmit
+npm run lint
+npm run lint:fix
+npm run check        # prettier --write . && eslint --fix
+npm run db:types     # regenerate src/types/supabase.gen.ts from the linked project (read-only)
+npm run db:backup    # pg_dump of the production DB into backups/ (read-only, needs .env.db)
+```
+
+Supabase CLI is a dev dependency (`npx supabase …`). Allowed for you: `migration new`, `gen types`,
+`migration list`. **Not** allowed without the user's explicit go-ahead for that specific migration:
+`db push` / `migration up` (`.claude/settings.json` asks first). Never: `db reset`, seeds, `psql`.
+
+Before calling work done: `npm run compile`, `npm run lint`, and `npx prettier --check .` must pass.
 
 ---
 
