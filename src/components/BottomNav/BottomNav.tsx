@@ -23,7 +23,7 @@ const BottomNav = () => {
   const right = items.slice(2)
 
   return (
-    <nav className='fixed inset-x-3 bottom-3 z-40 mb-[env(safe-area-inset-bottom)] rounded-full border border-border bg-card/95 p-1.5 shadow-lg shadow-olive/10 backdrop-blur md:hidden'>
+    <nav className='glass fixed inset-x-3 bottom-3 z-40 mb-[env(safe-area-inset-bottom)] rounded-full border border-white/60 p-1.5 shadow-[inset_0_1px_0_rgb(255_255_255/0.7),0_12px_32px_-12px_rgb(70_76_50/0.4)] md:hidden'>
       {/* Two equal halves around a fixed-width centre, so the + sits exactly in the middle. */}
       <div className='grid grid-cols-[1fr_4rem_1fr] items-center'>
         <ul className='grid grid-cols-2 gap-1'>

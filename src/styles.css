@@ -181,6 +181,18 @@
       0 10px 24px -12px rgb(70 76 50 / 0.45);
   }
 
+  /*
+   * Frosted glass for the sticky header and the floating mobile bar: warm translucent cream,
+   * strong blur with a bit of extra saturation so cards and chalkboards glow through, and a thin
+   * light edge on top like real glass.
+   */
+  .glass {
+    background-color: color-mix(in oklab, var(--cream) 58%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(1.7);
+    backdrop-filter: blur(20px) saturate(1.7);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6);
+  }
+
   /* Slightly fuzzy edges so white text reads as chalk, not as a font. */
   .chalk-text {
     color: var(--chalk);
