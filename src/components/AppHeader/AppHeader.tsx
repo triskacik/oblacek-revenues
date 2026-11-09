@@ -1,16 +1,17 @@
 import useNavItems from '@/hooks/useNavItems'
 import { cn } from '@/lib/utils'
 import { Link } from '@tanstack/react-router'
+import AddMenu from '../AddMenu/AddMenu'
 import UserMenu from '../UserMenu/UserMenu'
 
 const AppHeader = () => {
-  // Settings live in the user menu on desktop; the header keeps only the everyday screens.
-  const items = useNavItems().filter(item => item.title !== 'Nastavení')
+  // Settings live in the user menu on desktop; the header keeps the everyday screens + guide.
+  const items = useNavItems().filter(item => item.inHeader)
 
   return (
     <header className='sticky top-0 z-40 border-b border-border/70 bg-cream/90 backdrop-blur'>
       <div className='mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 md:h-20 md:px-8'>
-        <Link aria-label='Obláček — domů' className='shrink-0' to='/'>
+        <Link aria-label='Obláček - domů' className='shrink-0' to='/'>
           <img alt='Potraviny Obláček' className='h-9 w-auto md:h-12' src='/brand/logo.png' />
         </Link>
         <nav className='hidden items-center gap-1 rounded-full bg-secondary/70 p-1 md:flex'>
@@ -28,7 +29,12 @@ const AppHeader = () => {
             </Link>
           ))}
         </nav>
-        <UserMenu />
+        <div className='flex items-center gap-3'>
+          <div className='hidden md:block'>
+            <AddMenu />
+          </div>
+          <UserMenu />
+        </div>
       </div>
     </header>
   )

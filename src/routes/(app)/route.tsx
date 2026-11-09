@@ -2,6 +2,7 @@ import { fetchIsAllowedUser } from '@/api/access'
 import { queryKeys } from '@/api/queryKeys'
 import { getSession } from '@/auth/session'
 import { AppHeader, BottomNav } from '@/components'
+import AddEntryProvider from '@/contexts/AddEntry/AddEntryProvider'
 import useRedirectOnSignOut from '@/hooks/useRedirectOnSignOut'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
@@ -9,11 +10,13 @@ const Layout = () => {
   useRedirectOnSignOut()
 
   return (
-    <div className='min-h-svh'>
-      <AppHeader />
-      <Outlet />
-      <BottomNav />
-    </div>
+    <AddEntryProvider>
+      <div className='min-h-svh'>
+        <AppHeader />
+        <Outlet />
+        <BottomNav />
+      </div>
+    </AddEntryProvider>
   )
 }
 

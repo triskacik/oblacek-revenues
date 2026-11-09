@@ -1,23 +1,39 @@
-import { Chalkboard, EmptyState, Main, PageHeader, PeriodNav, StatTile } from '@/components'
+import { Main, PageHeader, PeriodNav } from '@/components'
+import useLedger from '@/hooks/useLedger'
+import FixedCostsBoard from '@/pages/comps/FixedCostsBoard/FixedCostsBoard'
 import { Route } from '@/routes/(app)/month/$monthId'
+import { toDbDate } from '@/utils/dateUtils'
+import { getMonthSummary } from '@/utils/envelopeUtils'
 import {
   formatMonth,
-  formatWeekRange,
   getCurrentMonthId,
   getMonthWeekStarts,
   parseMonthId,
   shiftMonthId,
-  toWeekId,
 } from '@/utils/weekUtils'
-import { Link } from '@tanstack/react-router'
-import { ChartColumn, HandCoins, Package, ReceiptText, ShoppingBasket, Sprout } from 'lucide-react'
+import { startOfISOWeek } from 'date-fns'
+import { MonthTiles, MonthWeeks, WeeklyChart, ZasilkovnaCard } from './comps'
 
 const MonthDetail = () => {
   const { monthId } = Route.useParams()
   // The route redirects invalid ids, so the month always parses here.
   const firstDay = parseMonthId(monthId) as Date
+  const month = `${monthId}-01`
   const currentMonthId = getCurrentMonthId()
   const title = formatMonth(firstDay)
+
+  const { ledger, isError } = useLedger()
+  const summary = ledger ? getMonthSummary(ledger, month) : null
+
+  // "Still missing" for fixed costs: as of this week in the current month, otherwise the month's
+  // last week (past) or first week (future).
+  const weeks = getMonthWeekStarts(firstDay).map(toDbDate)
+  const currentMonday = toDbDate(startOfISOWeek(new Date()))
+  const statusMonday = weeks.includes(currentMonday)
+    ? currentMonday
+    : month < `${currentMonthId}-01`
+      ? weeks[weeks.length - 1]
+      : weeks[0]
 
   return (
     <Main>
@@ -28,59 +44,29 @@ const MonthDetail = () => {
               ? undefined
               : { to: '/month/$monthId', params: { monthId: currentMonthId } }
           }
-          currentLabel='Tento měsíc'
+          currentLabel='Skočit na aktuální měsíc'
           next={{ to: '/month/$monthId', params: { monthId: shiftMonthId(monthId, 1) } }}
           nextLabel='Další měsíc'
           prev={{ to: '/month/$monthId', params: { monthId: shiftMonthId(monthId, -1) } }}
           prevLabel='Předchozí měsíc'
         />
       </PageHeader>
-      <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-        <StatTile icon={ShoppingBasket} label='Tržby' tone='terracotta' value='— Kč' />
-        <StatTile icon={ReceiptText} label='Výdaje' tone='honey' value='— Kč' />
-        <StatTile icon={HandCoins} label='Prodavačce' tone='olive' value='— Kč' />
-        <StatTile icon={Sprout} label='Měsíc celkem' tone='sage' value='— Kč' />
-      </div>
-      <div className='mt-6 grid gap-6 lg:grid-cols-3'>
-        <div className='flex flex-col gap-6 lg:col-span-2'>
-          <EmptyState
-            className='min-h-56'
-            description='Tržby, výdaje a výplaty po týdnech, jakmile budou data.'
-            icon={ChartColumn}
-            title='Jak šel měsíc'
-          />
-          <section className='rounded-2xl border border-border bg-card p-5 shadow-sm shadow-olive/5'>
-            <h2 className='mb-3 font-chalk text-2xl leading-none text-olive'>Týdny v měsíci</h2>
-            <ul className='divide-y divide-border/70'>
-              {getMonthWeekStarts(firstDay).map(monday => {
-                const weekId = toWeekId(monday)
-                return (
-                  <li key={weekId}>
-                    <Link
-                      className='flex items-center justify-between gap-3 rounded-lg px-2 py-2.5 text-sm transition-colors hover:bg-secondary/60'
-                      params={{ weekId }}
-                      to='/week/$weekId'
-                    >
-                      <span className='font-semibold'>Týden {Number(weekId.split('-W')[1])}</span>
-                      <span className='text-muted-foreground'>{formatWeekRange(monday)}</span>
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
-          </section>
+      {isError ? (
+        <p className='mb-6 rounded-xl bg-secondary/60 p-4 text-sm text-muted-foreground'>
+          Některá data se nepodařilo načíst. Zkus obnovit stránku.
+        </p>
+      ) : null}
+      <MonthTiles inProgress={monthId >= currentMonthId} summary={summary} />
+      <div className='mt-6 grid gap-6 lg:grid-cols-5'>
+        <div className='flex flex-col gap-6 lg:col-span-3'>
+          <MonthWeeks openDays={ledger?.settings.open_days} summary={summary} />
+          {summary && summary.weeks.length > 0 ? (
+            <WeeklyChart openDays={ledger?.settings.open_days} summary={summary} />
+          ) : null}
         </div>
-        <div className='flex flex-col gap-6'>
-          <Chalkboard title='Zaplaceno?'>
-            <p className='text-sm text-chalk-dim'>
-              Tady si budeš odškrtávat nájem a další fixní platby za {title}.
-            </p>
-          </Chalkboard>
-          <EmptyState
-            description='Až přijde platba za výdejní místo, zapíšeš ji k měsíci, za který je.'
-            icon={Package}
-            title='Zásilkovna'
-          />
+        <div className='flex flex-col gap-6 lg:col-span-2'>
+          <FixedCostsBoard ledger={ledger} month={month} statusMonday={statusMonday} />
+          <ZasilkovnaCard ledger={ledger} month={month} />
         </div>
       </div>
     </Main>

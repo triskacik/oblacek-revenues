@@ -28,4 +28,4 @@ const Label = ({
   </LabelPrimitive.Root>
 )
 
-export default Label
+export { Label }

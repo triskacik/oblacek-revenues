@@ -1,46 +1,75 @@
-import { Main, PageHeader, PeriodNav, StatTile } from '@/components'
+import { AlertsPanel, Main, PageHeader, PeriodNav } from '@/components'
+import useLedger from '@/hooks/useLedger'
+import FixedCostsBoard from '@/pages/comps/FixedCostsBoard/FixedCostsBoard'
 import { Route } from '@/routes/(app)/week/$weekId'
+import { toDbDate } from '@/utils/dateUtils'
+import { getWeekMonth } from '@/utils/envelopeUtils'
 import { formatWeekRange, getCurrentWeekId, parseWeekId, shiftWeekId } from '@/utils/weekUtils'
-import { ReceiptText, ShoppingBasket, Sparkles } from 'lucide-react'
-import { FixedCostsBoard, NoticesCard, RecommendationBoard, ShopMoneyCard, WeekDays } from './comps'
+import { addDays } from 'date-fns'
+import { RecommendationBoard, ShopMoneyCard, WeekDays, WeekTotals } from './comps'
 
 const WeekDetail = () => {
   const { weekId } = Route.useParams()
   // The route redirects invalid ids, so the week always parses here.
   const monday = parseWeekId(weekId) as Date
+  const mondayDb = toDbDate(monday)
+  const sundayDb = toDbDate(addDays(monday, 6))
   const weekNumber = Number(weekId.split('-W')[1])
   const currentWeekId = getCurrentWeekId()
 
+  const { ledger, isPending, isError } = useLedger()
+  const inWeek = (date: string) => date >= mondayDb && date <= sundayDb
+  const sales = ledger?.sales.filter(s => inWeek(s.date)) ?? []
+  const expenses = ledger?.expenses.filter(e => inWeek(e.date)) ?? []
+  const openDays = ledger?.settings.open_days
+
   return (
     <Main>
-      <PageHeader subtitle={formatWeekRange(monday)} title={`Týden ${weekNumber}`}>
+      <PageHeader subtitle={formatWeekRange(monday, openDays)} title={`Týden ${weekNumber}`}>
         <PeriodNav
           current={
             weekId === currentWeekId
               ? undefined
               : { to: '/week/$weekId', params: { weekId: currentWeekId } }
           }
-          currentLabel='Tento týden'
+          currentLabel='Skočit na aktuální týden'
           next={{ to: '/week/$weekId', params: { weekId: shiftWeekId(weekId, 1) } }}
           nextLabel='Další týden'
           prev={{ to: '/week/$weekId', params: { weekId: shiftWeekId(weekId, -1) } }}
           prevLabel='Předchozí týden'
         />
       </PageHeader>
-      <div className='grid gap-6 lg:grid-cols-3'>
-        <div className='flex flex-col gap-6 lg:col-span-2'>
-          <RecommendationBoard />
-          <div className='grid gap-4 sm:grid-cols-3'>
-            <StatTile icon={ShoppingBasket} label='Tržby' tone='terracotta' value='— Kč' />
-            <StatTile icon={ReceiptText} label='Výdaje' tone='honey' value='— Kč' />
-            <StatTile icon={Sparkles} label='Navíc' tone='sage' value='— Kč' />
-          </div>
-          <WeekDays monday={monday} />
+      {isError ? (
+        <p className='mb-6 rounded-xl bg-secondary/60 p-4 text-sm text-muted-foreground'>
+          Některá data se nepodařilo načíst. Zkus obnovit stránku.
+        </p>
+      ) : null}
+      {/*
+        Order = priority on mobile (columns stack): what to do, the week, day by day,
+        then the payout board, shop money and fixed costs.
+      */}
+      <div className='grid gap-6 lg:grid-cols-5'>
+        <div className='flex flex-col gap-6 lg:col-span-3'>
+          <AlertsPanel ledger={ledger} />
+          <WeekTotals expenses={expenses} isPending={isPending} sales={sales} />
+          <WeekDays
+            expenses={expenses}
+            isPending={isPending}
+            monday={monday}
+            openDays={openDays}
+            sales={sales}
+          />
         </div>
-        <div className='flex flex-col gap-6 lg:pt-16'>
-          <ShopMoneyCard />
-          <FixedCostsBoard />
-          <NoticesCard />
+        <div className='flex flex-col gap-6 lg:col-span-2'>
+          {/* Keyed by week so the "keep for purchases" field starts fresh on every week. */}
+          <RecommendationBoard
+            key={weekId}
+            ledger={ledger}
+            monday={mondayDb}
+            weekNumber={weekNumber}
+          />
+          <ShopMoneyCard ledger={ledger} />
+          <FixedCostsBoard ledger={ledger} month={getWeekMonth(mondayDb)} statusMonday={mondayDb} />
         </div>
       </div>
     </Main>

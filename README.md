@@ -60,3 +60,31 @@ npm run db:backup                                # → backups/oblacek-<dátum>.
 ```
 
 Záloha iba číta. `backups/` a `.env.db` sú v `.gitignore`, obsahujú reálne dáta a heslo.
+
+## Nasadenie (Vercel)
+
+`vercel.json` rieši SPA routing (všetky cesty → `index.html`), hlavičky (noindex, zákaz iframe)
+a dlhú cache pre `/assets`.
+
+1. Vercel → **Add New → Project** → importovať GitHub repo `oblacek-revenues`, production branch
+   `main`. Framework, build (`npm run build`) aj output (`dist`) sa načítajú z `vercel.json`.
+2. **Environment Variables** (Production aj Preview): `VITE_SUPABASE_URL`,
+   `VITE_SUPABASE_ANON_KEY` (rovnaké hodnoty ako v `.env.local`). Nikdy nie `service_role`.
+3. Deploy. Produkčná adresa napr. `https://oblacek-revenues.vercel.app`.
+4. Supabase → **Authentication → URL Configuration**: Site URL = produkčná adresa, do Redirect URLs
+   pridať produkčnú adresu (a nechať `http://localhost:3000` na vývoj).
+5. Google Cloud → OAuth consent screen: buď **Publish app**, alebo pridať Sárin email do test
+   users. Redirect URI v OAuth klientovi sa nemení (je to Supabase callback).
+6. Supabase SQL Editor: `insert into public.allowed_users (email) values ('<sarin-email>');`
+7. Sára sa prihlási na produkčnej adrese → potom **vypnúť nové registrácie**
+   (Authentication → Sign In / Providers → Allow new users to sign up).
+
+Každý push do `main` sa nasadí automaticky; ostatné vetvy dostanú preview URL (prihlásenie na nich
+funguje len po pridaní ich adresy do Redirect URLs, napr. `https://*-triskacik.vercel.app/**`).
+
+### Ikona na ploche iPhonu
+
+V Safari otvoriť produkčnú adresu → **Zdieľať → Pridať na plochu**. Názov „Obláček“ aj ikona
+(obláčik z loga na krémovom pozadí) sa doplnia samé (`apple-touch-icon`, `apple-mobile-web-app-title`,
+`manifest.webmanifest`). Appka sa otvára vo vlastnom okne bez lišty Safari. Prihlásenie sa v nej
+drží zvlášť od Safari, takže sa treba raz prihlásiť priamo v appke z plochy.

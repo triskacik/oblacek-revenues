@@ -58,10 +58,13 @@
   --ring: #a9b38c;
   --radius: 1rem;
 
-  /* Charts (olive, terracotta, tan, sage, blush) */
-  --chart-1: var(--olive);
-  --chart-2: var(--terracotta);
-  --chart-3: var(--tan);
+  /*
+   * Charts: brand hues stepped so the pair stays apart for colour-blind readers and keeps 3:1 on
+   * cards (checked with the dataviz validator). 1 = sales, 2 = expenses, 3 = shop money / positive.
+   */
+  --chart-1: #8f4122;
+  --chart-2: #b98a26;
+  --chart-3: var(--olive);
   --chart-4: var(--sage);
   --chart-5: var(--blush);
 }
@@ -132,6 +135,23 @@
 
   body {
     @apply m-0 bg-background font-sans text-foreground antialiased;
+  }
+
+  /* Tailwind v4 resets buttons to the default cursor; everything clickable shows the hand. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  [role='menuitem']:not([data-disabled]),
+  [role='option']:not([data-disabled]),
+  a[href],
+  select:not(:disabled),
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  select:disabled {
+    cursor: not-allowed;
   }
 
   input[type='number']::-webkit-inner-spin-button,

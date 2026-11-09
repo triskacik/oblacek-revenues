@@ -1,5 +1,5 @@
 import { Link, type LinkOptions } from '@tanstack/react-router'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Undo2 } from 'lucide-react'
 import { Button } from '../ui'
 
 type Props = {
@@ -25,8 +25,12 @@ const PeriodNav = ({ prev, next, prevLabel, nextLabel, current, currentLabel }: 
       </Link>
     </Button>
     {current ? (
-      <Button asChild className='rounded-full' size='sm' variant='secondary'>
-        <Link {...current}>{currentLabel}</Link>
+      // The icon and "Skočit na…" wording make it read as an action, not a "this week" badge.
+      <Button asChild className='ml-1 rounded-full' size='sm' variant='secondary'>
+        <Link {...current}>
+          <Undo2 />
+          {currentLabel}
+        </Link>
       </Button>
     ) : null}
   </div>

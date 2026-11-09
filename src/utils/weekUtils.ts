@@ -59,7 +59,7 @@ export const getOpenWeekDays = (monday: Date, openDays: number[] = DEFAULT_OPEN_
   getWeekDays(monday).filter(day => openDays.includes(getISODay(day)))
 
 /**
- * Range of the open days of the week, e.g. `02.11.–06.11.2026` or `28.12.2026 – 01.01.2027`.
+ * Range of the open days of the week, e.g. `02.11. - 06.11.2026` or `28.12.2026 - 01.01.2027`.
  * Falls back to Monday–Sunday when no day is open.
  */
 export const formatWeekRange = (monday: Date, openDays: number[] = DEFAULT_OPEN_DAYS) => {
@@ -67,9 +67,9 @@ export const formatWeekRange = (monday: Date, openDays: number[] = DEFAULT_OPEN_
   const first = days[0] ?? monday
   const last = days[days.length - 1] ?? addDays(monday, 6)
   if (first.getFullYear() === last.getFullYear()) {
-    return `${format(first, 'dd.MM.')}–${format(last, 'dd.MM.yyyy')}`
+    return `${format(first, 'dd.MM.')} - ${format(last, 'dd.MM.yyyy')}`
   }
-  return `${format(first, 'dd.MM.yyyy')} – ${format(last, 'dd.MM.yyyy')}`
+  return `${format(first, 'dd.MM.yyyy')} - ${format(last, 'dd.MM.yyyy')}`
 }
 
 // Month

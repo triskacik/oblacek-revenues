@@ -13,6 +13,7 @@ import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as accessLoginRouteImport } from './routes/(access)/login'
 import { Route as accessNoAccessRouteImport } from './routes/(access)/noAccess'
 import { Route as appIndexRouteImport } from './routes/(app)/index'
+import { Route as appGuideRouteImport } from './routes/(app)/guide'
 import { Route as appOverviewRouteImport } from './routes/(app)/overview'
 import { Route as appSettingsRouteImport } from './routes/(app)/settings'
 import { Route as appMonthMonthIdRouteImport } from './routes/(app)/month/$monthId'
@@ -35,6 +36,11 @@ const accessNoAccessRoute = accessNoAccessRouteImport.update({
 const appIndexRoute = appIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appGuideRoute = appGuideRouteImport.update({
+  id: '/guide',
+  path: '/guide',
   getParentRoute: () => appRouteRoute,
 } as any)
 const appOverviewRoute = appOverviewRouteImport.update({
@@ -62,6 +68,7 @@ export interface FileRoutesByFullPath {
   '/': typeof appIndexRoute
   '/login': typeof accessLoginRoute
   '/noAccess': typeof accessNoAccessRoute
+  '/guide': typeof appGuideRoute
   '/overview': typeof appOverviewRoute
   '/settings': typeof appSettingsRoute
   '/month/$monthId': typeof appMonthMonthIdRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/login': typeof accessLoginRoute
   '/noAccess': typeof accessNoAccessRoute
+  '/guide': typeof appGuideRoute
   '/overview': typeof appOverviewRoute
   '/settings': typeof appSettingsRoute
   '/': typeof appIndexRoute
@@ -81,6 +89,7 @@ export interface FileRoutesById {
   '/(app)': typeof appRouteRouteWithChildren
   '/(access)/login': typeof accessLoginRoute
   '/(access)/noAccess': typeof accessNoAccessRoute
+  '/(app)/guide': typeof appGuideRoute
   '/(app)/overview': typeof appOverviewRoute
   '/(app)/settings': typeof appSettingsRoute
   '/(app)/': typeof appIndexRoute
@@ -93,6 +102,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/noAccess'
+    | '/guide'
     | '/overview'
     | '/settings'
     | '/month/$monthId'
@@ -101,6 +111,7 @@ export interface FileRouteTypes {
   to:
     | '/login'
     | '/noAccess'
+    | '/guide'
     | '/overview'
     | '/settings'
     | '/'
@@ -111,6 +122,7 @@ export interface FileRouteTypes {
     | '/(app)'
     | '/(access)/login'
     | '/(access)/noAccess'
+    | '/(app)/guide'
     | '/(app)/overview'
     | '/(app)/settings'
     | '/(app)/'
@@ -154,6 +166,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appIndexRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/guide': {
+      id: '/(app)/guide'
+      path: '/guide'
+      fullPath: '/guide'
+      preLoaderRoute: typeof appGuideRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/overview': {
       id: '/(app)/overview'
       path: '/overview'
@@ -186,6 +205,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface appRouteRouteChildren {
+  appGuideRoute: typeof appGuideRoute
   appOverviewRoute: typeof appOverviewRoute
   appSettingsRoute: typeof appSettingsRoute
   appIndexRoute: typeof appIndexRoute
@@ -194,6 +214,7 @@ interface appRouteRouteChildren {
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
+  appGuideRoute: appGuideRoute,
   appOverviewRoute: appOverviewRoute,
   appSettingsRoute: appSettingsRoute,
   appIndexRoute: appIndexRoute,

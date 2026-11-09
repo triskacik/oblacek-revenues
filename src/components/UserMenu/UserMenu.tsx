@@ -2,7 +2,7 @@ import useSessionUser from '@/hooks/useSessionUser'
 import { signOut } from '@/auth/session'
 import { toast } from '@/lib/toast'
 import { Link } from '@tanstack/react-router'
-import { LogOut, Settings } from 'lucide-react'
+import { BookHeart, LogOut, Settings } from 'lucide-react'
 import {
   Avatar,
   AvatarFallback,
@@ -55,6 +55,12 @@ const UserMenu = () => {
           <div className='truncate text-xs text-muted-foreground'>{user?.email}</div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {/* On mobile the bottom bar has no room for the guide; on desktop it's also a header pill. */}
+        <DropdownMenuItem asChild>
+          <Link to='/guide'>
+            <BookHeart /> Návod
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link to='/settings'>
             <Settings /> Nastavení

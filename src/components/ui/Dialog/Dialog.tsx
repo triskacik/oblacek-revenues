@@ -61,7 +61,7 @@ const DialogContent = ({
           data-slot='dialog-close'
         >
           <XIcon />
-          <span className='sr-only'>Close</span>
+          <span className='sr-only'>Zavřít</span>
         </DialogPrimitive.Close>
       )}
     </DialogPrimitive.Content>

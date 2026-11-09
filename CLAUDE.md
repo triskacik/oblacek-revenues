@@ -68,9 +68,15 @@ Target user: Sára (26). Friendly, a bit cute, calm. Full rules: `docs/DESIGN.md
 - Headings: `font-chalk` (Caveat Brush). Body and numbers: Nunito (`font-sans`, `tabular-nums`).
 - `Mascot` (cloud from the logo) for empty, loading and error states. Logo files in `public/brand/`.
 - Czech copy uses informal "ty" (tykání), short and human.
-- Dates always zero-padded: `06.11.`, with year `06.11.2026` (`dd.MM.` / `dd.MM.yyyy`) — use `weekUtils` formatters.
+- Dates always zero-padded: `06.11.`, with year `06.11.2026` (`dd.MM.` / `dd.MM.yyyy`); use the `weekUtils` / `dateUtils` formatters.
 - Show only the shop's open days (settings `open_days`) in day lists; weekend records still count to their week.
 - shadcn primitives stay close to default; style through tokens and `className`.
+- **Never use long dashes (`—`, `–`) or the minus sign `−` in UI copy.** Use a plain hyphen: `-`, or `-`
+  with spaces for ranges and empty values (`- Kč`, `02.11. - 06.11.2026`).
+- Everything clickable shows the pointer cursor (global rule in `src/styles.css`); keep custom
+  clickables as `<button>` / `<a>` so it applies.
+- Dates, months and times are picked with `DatePicker` / `MonthPicker` / `TimePicker` (through
+  `HFField`), never native `<input type="date|month|time">`.
 
 ---
 
