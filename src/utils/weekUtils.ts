@@ -3,6 +3,7 @@ import {
   addMonths,
   addWeeks,
   format,
+  getISODay,
   getISOWeek,
   getISOWeekYear,
   isValid,
@@ -50,16 +51,25 @@ export const getWeekDays = (monday: Date) => Array.from({ length: 7 }, (_, i) =>
 
 export const getWeekMonthId = (monday: Date) => toMonthId(addDays(monday, 3))
 
-/** e.g. `10.–16. 11. 2026` or `27. 10. – 2. 11. 2026` */
-export const formatWeekRange = (monday: Date) => {
-  const sunday = addDays(monday, 6)
-  if (monday.getMonth() === sunday.getMonth()) {
-    return `${format(monday, 'd.')}–${format(sunday, 'd. M. yyyy')}`
+/** ISO weekdays (1 = Monday … 7 = Sunday) the shop is open. Mirrors the DB default of settings.open_days. */
+export const DEFAULT_OPEN_DAYS = [1, 2, 3, 4, 5]
+
+/** Days of the week the shop is open, in order. */
+export const getOpenWeekDays = (monday: Date, openDays: number[] = DEFAULT_OPEN_DAYS) =>
+  getWeekDays(monday).filter(day => openDays.includes(getISODay(day)))
+
+/**
+ * Range of the open days of the week, e.g. `02.11.–06.11.2026` or `28.12.2026 – 01.01.2027`.
+ * Falls back to Monday–Sunday when no day is open.
+ */
+export const formatWeekRange = (monday: Date, openDays: number[] = DEFAULT_OPEN_DAYS) => {
+  const days = getOpenWeekDays(monday, openDays)
+  const first = days[0] ?? monday
+  const last = days[days.length - 1] ?? addDays(monday, 6)
+  if (first.getFullYear() === last.getFullYear()) {
+    return `${format(first, 'dd.MM.')}–${format(last, 'dd.MM.yyyy')}`
   }
-  if (monday.getFullYear() === sunday.getFullYear()) {
-    return `${format(monday, 'd. M.')} – ${format(sunday, 'd. M. yyyy')}`
-  }
-  return `${format(monday, 'd. M. yyyy')} – ${format(sunday, 'd. M. yyyy')}`
+  return `${format(first, 'dd.MM.yyyy')} – ${format(last, 'dd.MM.yyyy')}`
 }
 
 // Month
@@ -98,5 +108,5 @@ export const getMonthWeekStarts = (firstDay: Date) => {
   return mondays
 }
 
-/** e.g. `po 10. 11.` */
-export const formatDayShort = (date: Date) => format(date, 'EEEEEE d. M.', { locale: cs })
+/** e.g. `po 02.11.` */
+export const formatDayShort = (date: Date) => format(date, 'EEEEEE dd.MM.', { locale: cs })

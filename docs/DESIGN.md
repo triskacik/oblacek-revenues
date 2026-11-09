@@ -88,6 +88,7 @@ a štruktúra kódu.
 - **Písma**: _Caveat Brush_ (krieda / ručne písané) na nadpisy a tabule, _Nunito_ (zaoblené,
   čitateľné) na všetko ostatné a na čísla.
 - **Shadcn** komponenty ostávajú skoro defaultné, vzhľad dávajú tokeny, zaoblenie a farby.
+- **Dátumy** vždy s nulami: `06.11.`, s rokom `06.11.2026` (`dd.MM.` / `dd.MM.yyyy`).
 - **Tón textov**: tykanie, krátko, ľudsky („Zatím v klidu“, „Mrkneme, jak se obchodu daří?“).
 - **Layout**: hlavička s logom a „pilulkovou“ navigáciou na desktope (bez sidebaru), plávajúca
   spodná lišta na mobile.
@@ -96,16 +97,19 @@ a štruktúra kódu.
 
 ## Pojmy
 
-| Pojem (UI, cs)      | Význam                                                                                                                                                                                                                               |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Týden**           | Pondelok–Nedeľa (ISO, `2026-W46`). Mesiacu patrí podľa štvrtka.                                                                                                                                                                      |
-| **Tržba**           | Peniaze z predaja za deň (`0` = zavřeno).                                                                                                                                                                                            |
-| **Výdaj**           | Čokoľvek zaplatené z peňazí obchodu (tovar, drobnosti…). Fixné náklady sa sem nezadávajú.                                                                                                                                            |
-| **Přebytek týdne**  | `tržby − výdaje` za týždeň. Záporný = ztráta.                                                                                                                                                                                        |
-| **Zásilkovna**      | Mesačná faktúra za výdajné miesto. Príjem mimo pokladne za **mesiac**, ide do obálky na fixní. Technicky „jiný příjem“ (`other_incomes.kind = 'zasilkovna'`), aby sa dali neskôr pridať ďalšie druhy; v UI je zatiaľ iba Zásilkovna. |
-| **Fixní náklady**   | Mesačné náklady, suma platná od mesiaca X, deň splatnosti. Každý mesiac sa odškrtávajú ako _zaplacené_.                                                                                                                              |
-| **Uzávěrka týdne**  | Rozdelenie _k dispozici_: výplata, do obálky na fixní, na nákupy, vzala jsem si                                                                                                                                                      |
-| **Výsledek měsíce** | `přebytky + Zásilkovna − výplaty − vzala si − fixní náklady měsíce`. Zarobil obchod, alebo prerobil?                                                                                                                                 |
+| Pojem (UI, cs)            | Význam                                                                                                                                                                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Týden**                 | Dáta: Pondelok–Nedeľa (ISO, `2026-W46`), mesiacu patrí podľa štvrtka. UI ukazuje iba **otváracie dni**; víkendový nákup sa normálne započíta do týždňa.                                                                              |
+| **Otváracie dni**         | Dni v týždni, keď je obchod otvorený (Nastavenia, teraz Po–Pá). Iba pre ne sa čaká tržba.                                                                                                                                            |
+| **Koniec pracovnej doby** | Jeden čas pre všetky dni (napr. 18:00). Až potom appka čaká dnešnú tržbu.                                                                                                                                                            |
+| **Koniec týždňa**         | Koniec pracovnej doby v poslednom otváracom dni týždňa (teraz piatok).                                                                                                                                                               |
+| **Tržba**                 | Peniaze z predaja za deň (`0` = zavřeno).                                                                                                                                                                                            |
+| **Výdaj**                 | Čokoľvek zaplatené z peňazí obchodu (tovar, drobnosti…). Fixné náklady sa sem nezadávajú.                                                                                                                                            |
+| **Přebytek týdne**        | `tržby − výdaje` za týždeň. Záporný = ztráta.                                                                                                                                                                                        |
+| **Zásilkovna**            | Mesačná faktúra za výdajné miesto. Príjem mimo pokladne za **mesiac**, ide do obálky na fixní. Technicky „jiný příjem“ (`other_incomes.kind = 'zasilkovna'`), aby sa dali neskôr pridať ďalšie druhy; v UI je zatiaľ iba Zásilkovna. |
+| **Fixní náklady**         | Mesačné náklady, suma platná od mesiaca X, deň splatnosti. Každý mesiac sa odškrtávajú ako _zaplacené_.                                                                                                                              |
+| **Uzávěrka týdne**        | Rozdelenie _k dispozici_: výplata, do obálky na fixní, na nákupy, vzala jsem si                                                                                                                                                      |
+| **Výsledek měsíce**       | `přebytky + Zásilkovna − výplaty − vzala si − fixní náklady měsíce`. Zarobil obchod, alebo prerobil?                                                                                                                                 |
 
 ---
 
@@ -156,14 +160,15 @@ doporučeno vyplatit  = max(0, k dispozici − doporučeno do obálky − N)
 - Keď `k dispozici − do obálky < N`: výplata 0 a _„Na nákupy zůstane jen 1 800 Kč místo 3 000 Kč“_.
 - Je jedno, kedy v mesiaci nájom zaplatí: zaplatenie zníži _odloženo_ aj _nezaplacené_ o rovnakú
   sumu, takže _chybí_ sa nezmení. Prebytok obálky z minulých mesiacov _chybí_ znižuje, mínus zvyšuje.
-- Výrazná od soboty a pre každý minulý neuzavretý týždeň. Uzávierka sa ňou predvyplní.
+- Výrazná od posledného otváracieho dňa týždňa (teraz piatok) a pre každý minulý neuzavretý týždeň.
+  Uzávierka sa ňou predvyplní.
 
 #### Overenie (nájom 12 000 splatný 5., 4 týždne, přebytek 8 000/týždeň, N = 2 000, štart od 0)
 
 | Týž. | Na nákupy z min. | K dispozici | Odloženo pred  | Chybí  | Do obálky | Výplata   | Na nákupy | Odloženo po |
 | ---- | ---------------- | ----------- | -------------- | ------ | --------- | --------- | --------- | ----------- |
 | 1    | 0                | 8 000       | 0              | 12 000 | 3 000     | **3 000** | 2 000     | 3 000       |
-|      |                  |             | _5. 11. nájom_ |        |           |           |           | −9 000      |
+|      |                  |             | _05.11. nájom_ |        |           |           |           | −9 000      |
 | 2    | 2 000            | 10 000      | −9 000         | 9 000  | 3 000     | **5 000** | 2 000     | −6 000      |
 | 3    | 2 000            | 10 000      | −6 000         | 6 000  | 3 000     | **5 000** | 2 000     | −3 000      |
 | 4    | 2 000            | 10 000      | −3 000         | 3 000  | 3 000     | **5 000** | 2 000     | **0**       |
@@ -178,14 +183,14 @@ nájom pokrytý a na nákupy ostáva 2 000.
 Každý záznam má **dátum, kedy sa to stalo**, nie kedy ho zapísala. Modály majú predvolene _dnes_.
 Zásilkovna má namiesto dátumu **mesiac**.
 
-| Situácia                                                   | Ako appka reaguje                                                                                                                                                                                                                                                                                                       |
-| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Budúcnosť / pred počátečním stavem**                     | Nedovolené.                                                                                                                                                                                                                                                                                                             |
-| **Do otvoreného minulého týždňa**                          | Bez otázok. Toast: „Uloženo do týdne 45 (3.–9. 11.)“.                                                                                                                                                                                                                                                                   |
-| **Do uzavretého týždňa**                                   | Povolené. Výplata ani obálka na fixní sa nemenia; rozdiel ide z/do _na nákupy_ toho týždňa (a teda do ďalších týždňov). Týždeň ukáže _„Po uzávěrce: výdaje +3 000 Kč (čerpáno z rezervy na nákupy)“_. Typicky víkendový nákup po sobotnej uzávierke, čo je v poriadku. Upozornenie iba ak tým _na nákupy_ klesne pod 0. |
-| **Zásilkovna za minulý mesiac** (za říjen, zadaná 15. 11.) | „Za měsíc: říjen“ (rýchla voľba _minulý měsíc_). Obálka na fixní narastie hneď, aktuálne odporúčanie sa zvýši.                                                                                                                                                                                                          |
-| **Fixný náklad zaplatený za minulý mesiac**                | Checklist ide prepnúť na ľubovoľný mesiac.                                                                                                                                                                                                                                                                              |
-| **Zmena / zmazanie záznamu**                               | Rovnaké pravidlá; zmazanie v uzavretom týždni s potvrdením.                                                                                                                                                                                                                                                             |
+| Situácia                                                  | Ako appka reaguje                                                                                                                                                                                                                                                                                                        |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Budúcnosť / pred počátečním stavem**                    | Nedovolené.                                                                                                                                                                                                                                                                                                              |
+| **Do otvoreného minulého týždňa**                         | Bez otázok. Toast: „Uloženo do týdne 45 (02.11.–06.11.)“.                                                                                                                                                                                                                                                                |
+| **Do uzavretého týždňa**                                  | Povolené. Výplata ani obálka na fixní sa nemenia; rozdiel ide z/do _na nákupy_ toho týždňa (a teda do ďalších týždňov). Týždeň ukáže _„Po uzávěrce: výdaje +3 000 Kč (čerpáno z rezervy na nákupy)“_. Typicky víkendový nákup po piatkovej uzávierke, čo je v poriadku. Upozornenie iba ak tým _na nákupy_ klesne pod 0. |
+| **Zásilkovna za minulý mesiac** (za říjen, zadaná 15.11.) | „Za měsíc: říjen“ (rýchla voľba _minulý měsíc_). Obálka na fixní narastie hneď, aktuálne odporúčanie sa zvýši.                                                                                                                                                                                                           |
+| **Fixný náklad zaplatený za minulý mesiac**               | Checklist ide prepnúť na ľubovoľný mesiac.                                                                                                                                                                                                                                                                               |
+| **Zmena / zmazanie záznamu**                              | Rovnaké pravidlá; zmazanie v uzavretom týždni s potvrdením.                                                                                                                                                                                                                                                              |
 
 Keď spätný záznam zmení obálky, zmení sa aj aktuálne odporúčanie. „Jak se to počítá“ ukáže prečo.
 
@@ -193,15 +198,27 @@ Keď spätný záznam zmení obálky, zmení sa aj aktuálne odporúčanie. „J
 
 ## Upozornenia
 
-`getAlerts()` v `src/utils/alertsUtils.ts`; úroveň `info` / `warning` / `danger`, odkaz na riešenie.
+`getAlerts()` v `src/utils/alertsUtils.ts`. Každé má odkaz, kde to vyriešiť. Úrovne bez červenej:
+`info` (šalviová), `todo` (medová), `important` (terakota). Nič pred `opening_date` (02.11.2026)
+appku nezaujíma.
 
-| Upozornenie                                                                               | Kedy                                                        | Úroveň                      |
-| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------- | --------------------------- |
-| **Neuzavřený týden** „Týden 45 není uzavřený“                                             | minulý týždeň bez uzávierky                                 | warning                     |
-| **Nezaplaceno** „Nájem 12 000 Kč, splatnost 5. 11.“                                       | fixný náklad mesiaca neodškrtnutý                           | info → danger po splatnosti |
-| **Fixní náklady se nepokryjí** „Do konce listopadu chybí 2 000 Kč“                        | v poslednom týždni mesiaca `chybí > k dispozici`            | danger                      |
-| **Rezerva na nákupy v mínusu** „Týden 44: výdaje po uzávěrce překročily rezervu o 500 Kč“ | _na nákupy_ uzavretého týždňa < 0                           | warning                     |
-| **Chybí tržba** „Chybí tržba za: Po, St“                                                  | minulý deň týždňa bez tržby (odporúčanie je potom nepresné) | info                        |
+| Upozornenie                                                                                | Kedy                                                                                                                      | Úroveň                         |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| **Chybí tržba** „Chybí tržba za 03.11. a 05.11.“                                           | otvárací deň od `opening_date` bez záznamu tržby; **dnešok až po konci pracovnej doby**. Zatvorené výnimočne = tržba `0`. | todo                           |
+| **Výplata není potvrzená** „Týden 45 skončil, zapiš, kolik jsi dala prodavačce“            | týždeň skončil (koniec pracovnej doby posledného otváracieho dňa) a nemá uzávierku                                        | todo                           |
+| **Chybí Zásilkovna** „Za říjen ještě není zapsaná Zásilkovna“                              | mesiac skončil (a nie je pred mesiacom `opening_date`) a nemá záznam Zásilkovne                                           | info                           |
+| **Nezaplaceno** „Nájem 12 000 Kč, splatnost 05.11.“                                        | fixný náklad mesiaca neodškrtnutý                                                                                         | info → important po splatnosti |
+| **Fixní náklady se nepokryjí** „Do konce listopadu chybí ještě 2 000 Kč“                   | v poslednom týždni mesiaca `chybí > k dispozici`                                                                          | important                      |
+| **Rezerva na nákupy došla** „Týden 44: výdaje po uzávěrce byly o 500 Kč vyšší než rezerva“ | _na nákupy_ uzavretého týždňa < 0                                                                                         | info                           |
+
+Viac chýbajúcich vecí rovnakého druhu sa zlúči do jedného upozornenia (napr. všetky dni bez tržby).
+
+----------------------------------------------------------------------------------------- | ----------------------------------------------------------- | --------------------------- |
+| **Neuzavřený týden** „Týden 45 není uzavřený“ | minulý týždeň bez uzávierky | warning |
+| **Nezaplaceno** „Nájem 12 000 Kč, splatnost 5. 11.“ | fixný náklad mesiaca neodškrtnutý | info → danger po splatnosti |
+| **Fixní náklady se nepokryjí** „Do konce listopadu chybí 2 000 Kč“ | v poslednom týždni mesiaca `chybí > k dispozici` | danger |
+| **Rezerva na nákupy v mínusu** „Týden 44: výdaje po uzávěrce překročily rezervu o 500 Kč“ | _na nákupy_ uzavretého týždňa < 0 | warning |
+| **Chybí tržba** „Chybí tržba za: Po, St“ | minulý deň týždňa bez tržby (odporúčanie je potom nepresné) | info |
 
 ---
 
@@ -215,7 +232,7 @@ Mobil: **spodná lišta** _Týden · Měsíc · [+] · Přehled_, obsah v jednom
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
-│ ◀  Týden 46 · 10.–16. 11. 2026  ▶                          [+ Přidat ▾]    │
+│ ◀  Týden 46 · 09.11.–13.11.2026  ▶                         [+ Přidat ▾]    │
 ├──────────────────────────────────────────┬─────────────────────────────────┤
 │ PRODAVAČCE DOPORUČUJI VYPLATIT           │ PENÍZE OBCHODU       14 200 Kč  │
 │ 4 000 Kč                                 │  odloženo na fixní    9 000     │
@@ -228,8 +245,8 @@ Mobil: **spodná lišta** _Týden · Měsíc · [+] · Přehled_, obsah v jednom
 ├──────────┴──────────┴────────────────────│─────────────────────────────────│
 │ [graf: tržby a výdaje po dňoch Po–Ne]    │ UPOZORNĚNÍ                      │
 ├──────────────────────────────────────────│  • Chybí tržba za St            │
-│ Po 10. 11.  tržba 2 600 · výdaje 1 200 ▸ │                                 │
-│ Út 11. 11.  …                            │                                 │
+│ Po 09.11.   tržba 2 600 · výdaje 1 200 ▸ │                                 │
+│ Út 10.11.   …                            │                                 │
 └──────────────────────────────────────────┴─────────────────────────────────┘
 ```
 
@@ -253,7 +270,8 @@ alebo zjednodušený).
 ### Nastavení (`/settings`)
 
 Fixné náklady (názov, suma, splatnosť, „od měsíce X nová částka“, ukončiť = suma 0 od mesiaca X)
-· počáteční stav (dátum, odloženo na fixní, na nákupy).
+· **otevírací doba**: zaškrtávanie dní v týždni (Po–Ne, teraz Po–Pá) a jeden čas konca pracovnej
+doby · počáteční stav (dátum otvorenia, odloženo na fixní, na nákupy).
 
 ### Modály
 
@@ -293,7 +311,9 @@ week_closings       (week_start date pk  -- pondelok
 
 settings            (id int pk check (id = 1), opening_date date
                     , opening_fixed numeric(12,2) default 0
-                    , opening_purchases numeric(12,2) default 0)
+                    , opening_purchases numeric(12,2) default 0
+                    , open_days smallint[] default '{1,2,3,4,5}'  -- ISO dni, 1 = Po
+                    , closing_time time default '18:00')
 allowed_users       (email text pk)
 ```
 

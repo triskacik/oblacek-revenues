@@ -1,16 +1,18 @@
 import { cn } from '@/lib/utils'
-import { formatDayShort, getWeekDays } from '@/utils/weekUtils'
+import { DEFAULT_OPEN_DAYS, formatDayShort, getOpenWeekDays } from '@/utils/weekUtils'
 import { isToday } from 'date-fns'
 
 type Props = {
   monday: Date
+  /** ISO weekdays the shop is open; will come from settings.open_days. */
+  openDays?: number[]
 }
 
-const WeekDays = ({ monday }: Props) => (
+const WeekDays = ({ monday, openDays = DEFAULT_OPEN_DAYS }: Props) => (
   <section className='rounded-2xl border border-border bg-card p-5 shadow-sm shadow-olive/5'>
-    <h2 className='mb-3 font-chalk text-2xl leading-none text-olive'>Dny v týdnu</h2>
+    <h2 className='mb-3 font-chalk text-2xl leading-none text-olive'>Otevřeno tento týden</h2>
     <ul className='divide-y divide-border/70'>
-      {getWeekDays(monday).map(day => (
+      {getOpenWeekDays(monday, openDays).map(day => (
         <li
           className={cn(
             'flex items-center justify-between gap-3 py-2.5 text-sm',

@@ -68,6 +68,8 @@ Target user: Sára (26). Friendly, a bit cute, calm. Full rules: `docs/DESIGN.md
 - Headings: `font-chalk` (Caveat Brush). Body and numbers: Nunito (`font-sans`, `tabular-nums`).
 - `Mascot` (cloud from the logo) for empty, loading and error states. Logo files in `public/brand/`.
 - Czech copy uses informal "ty" (tykání), short and human.
+- Dates always zero-padded: `06.11.`, with year `06.11.2026` (`dd.MM.` / `dd.MM.yyyy`) — use `weekUtils` formatters.
+- Show only the shop's open days (settings `open_days`) in day lists; weekend records still count to their week.
 - shadcn primitives stay close to default; style through tokens and `className`.
 
 ---
