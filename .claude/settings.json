@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(supabase db reset:*)",
+      "Bash(npx supabase db reset:*)",
+      "Bash(supabase db push --include-seed:*)",
+      "Bash(npx supabase db push --include-seed:*)",
+      "Bash(supabase seed:*)",
+      "Bash(npx supabase seed:*)",
+      "Bash(psql:*)"
+    ],
+    "ask": [
+      "Bash(supabase db push:*)",
+      "Bash(npx supabase db push:*)",
+      "Bash(supabase migration up:*)",
+      "Bash(npx supabase migration up:*)"
+    ]
+  }
+}
