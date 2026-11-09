@@ -1,21 +1,21 @@
+import useNavItems from '@/hooks/useNavItems'
 import { cn } from '@/lib/utils'
 import { Link } from '@tanstack/react-router'
-import useNavItems from '../AppSidebar/hooks/useNavItems'
 
-/** Mobile-only navigation; on desktop the sidebar takes over. */
+/** Mobile-only navigation, floating above the bottom edge; desktop uses the header pills. */
 const BottomNav = () => {
   const items = useNavItems()
 
   return (
-    <nav className='fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden'>
-      <ul className='grid grid-cols-4'>
+    <nav className='fixed inset-x-3 bottom-3 z-40 mb-[env(safe-area-inset-bottom)] rounded-full border border-border bg-card/95 p-1.5 shadow-lg shadow-olive/10 backdrop-blur md:hidden'>
+      <ul className='grid grid-cols-4 gap-1'>
         {items.map(item => (
           <li key={item.title}>
             <Link
               {...item.link}
               className={cn(
-                'flex flex-col items-center gap-1 py-2 text-xs text-muted-foreground',
-                item.isActive && 'font-medium text-foreground'
+                'flex flex-col items-center gap-0.5 rounded-full py-2 text-[11px] font-semibold text-olive-soft transition-colors',
+                item.isActive && 'bg-olive text-cream'
               )}
             >
               <item.icon className='size-5' />

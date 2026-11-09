@@ -1,75 +1,49 @@
-import { Main, PageHeader } from '@/components'
-import { Button } from '@/components/ui'
+import { Main, PageHeader, PeriodNav, StatTile } from '@/components'
 import { Route } from '@/routes/(app)/week/$weekId'
 import { formatWeekRange, getCurrentWeekId, parseWeekId, shiftWeekId } from '@/utils/weekUtils'
-import { PlaceholderCard } from '@/pages/comps'
-import { Link } from '@tanstack/react-router'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ReceiptText, ShoppingBasket, Sparkles } from 'lucide-react'
+import { FixedCostsBoard, NoticesCard, RecommendationBoard, ShopMoneyCard, WeekDays } from './comps'
 
 const WeekDetail = () => {
   const { weekId } = Route.useParams()
   // The route redirects invalid ids, so the week always parses here.
   const monday = parseWeekId(weekId) as Date
   const weekNumber = Number(weekId.split('-W')[1])
-  const isCurrentWeek = weekId === getCurrentWeekId()
+  const currentWeekId = getCurrentWeekId()
 
   return (
-    <>
-      <PageHeader title={`Týden ${weekNumber}`}>
-        <div className='flex items-center gap-1'>
-          <Button asChild size='icon' variant='ghost'>
-            <Link params={{ weekId: shiftWeekId(weekId, -1) }} to='/week/$weekId'>
-              <ChevronLeft />
-              <span className='sr-only'>Předchozí týden</span>
-            </Link>
-          </Button>
-          <span className='text-sm whitespace-nowrap text-muted-foreground'>
-            {formatWeekRange(monday)}
-          </span>
-          <Button asChild size='icon' variant='ghost'>
-            <Link params={{ weekId: shiftWeekId(weekId, 1) }} to='/week/$weekId'>
-              <ChevronRight />
-              <span className='sr-only'>Další týden</span>
-            </Link>
-          </Button>
-          {isCurrentWeek ? null : (
-            <Button asChild size='sm' variant='outline'>
-              <Link params={{ weekId: getCurrentWeekId() }} to='/week/$weekId'>
-                Dnes
-              </Link>
-            </Button>
-          )}
-        </div>
+    <Main>
+      <PageHeader subtitle={formatWeekRange(monday)} title={`Týden ${weekNumber}`}>
+        <PeriodNav
+          current={
+            weekId === currentWeekId
+              ? undefined
+              : { to: '/week/$weekId', params: { weekId: currentWeekId } }
+          }
+          currentLabel='Tento týden'
+          next={{ to: '/week/$weekId', params: { weekId: shiftWeekId(weekId, 1) } }}
+          nextLabel='Další týden'
+          prev={{ to: '/week/$weekId', params: { weekId: shiftWeekId(weekId, -1) } }}
+          prevLabel='Předchozí týden'
+        />
       </PageHeader>
-      <Main>
-        <div className='grid gap-4 lg:grid-cols-3'>
-          <div className='flex flex-col gap-4 lg:col-span-2'>
-            <PlaceholderCard
-              description='Kolik vyplatit prodavačce, aby zbylo na nákupy a fixní náklady.'
-              title='Doporučená výplata'
-            />
-            <div className='grid gap-4 sm:grid-cols-3'>
-              <PlaceholderCard description='Součet tržeb za týden.' title='Tržby' />
-              <PlaceholderCard description='Součet výdajů za týden.' title='Výdaje' />
-              <PlaceholderCard description='Tržby − výdaje.' title='Přebytek' />
-            </div>
-            <PlaceholderCard description='Tržby a výdaje po dnech.' title='Graf týdne' />
-            <PlaceholderCard description='Záznamy po dnech Po–Ne.' title='Dny' />
+      <div className='grid gap-6 lg:grid-cols-3'>
+        <div className='flex flex-col gap-6 lg:col-span-2'>
+          <RecommendationBoard />
+          <div className='grid gap-4 sm:grid-cols-3'>
+            <StatTile icon={ShoppingBasket} label='Tržby' tone='terracotta' value='— Kč' />
+            <StatTile icon={ReceiptText} label='Výdaje' tone='honey' value='— Kč' />
+            <StatTile icon={Sparkles} label='Navíc' tone='sage' value='— Kč' />
           </div>
-          <div className='flex flex-col gap-4'>
-            <PlaceholderCard
-              description='Odloženo na fixní náklady a na nákupy.'
-              title='Peníze obchodu'
-            />
-            <PlaceholderCard
-              description='Pokrytí a zaplacení v tomto měsíci.'
-              title='Fixní náklady'
-            />
-            <PlaceholderCard description='Co je potřeba udělat.' title='Upozornění' />
-          </div>
+          <WeekDays monday={monday} />
         </div>
-      </Main>
-    </>
+        <div className='flex flex-col gap-6 lg:pt-16'>
+          <ShopMoneyCard />
+          <FixedCostsBoard />
+          <NoticesCard />
+        </div>
+      </div>
+    </Main>
   )
 }
 

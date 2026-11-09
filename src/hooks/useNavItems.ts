@@ -1,6 +1,6 @@
 import { getCurrentMonthId, getCurrentWeekId } from '@/utils/weekUtils'
 import { linkOptions, useLocation, type LinkOptions } from '@tanstack/react-router'
-import { CalendarDays, CalendarRange, ChartLine, Settings, type LucideIcon } from 'lucide-react'
+import { CalendarDays, CalendarHeart, ChartSpline, Settings, type LucideIcon } from 'lucide-react'
 
 export type NavItem = {
   title: string
@@ -9,7 +9,7 @@ export type NavItem = {
   link: LinkOptions
 }
 
-/** Shared by the desktop sidebar and the mobile bottom navigation. */
+/** Shared by the desktop header and the mobile bottom navigation. */
 const useNavItems = (): NavItem[] => {
   const { pathname } = useLocation()
 
@@ -22,13 +22,13 @@ const useNavItems = (): NavItem[] => {
     },
     {
       title: 'Měsíc',
-      icon: CalendarRange,
+      icon: CalendarHeart,
       isActive: pathname.startsWith('/month'),
       link: linkOptions({ to: '/month/$monthId', params: { monthId: getCurrentMonthId() } }),
     },
     {
       title: 'Přehled',
-      icon: ChartLine,
+      icon: ChartSpline,
       isActive: pathname.startsWith('/overview'),
       link: linkOptions({ to: '/overview' }),
     },

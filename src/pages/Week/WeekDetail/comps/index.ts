@@ -1,0 +1,5 @@
+export { default as FixedCostsBoard } from './FixedCostsBoard/FixedCostsBoard'
+export { default as NoticesCard } from './NoticesCard/NoticesCard'
+export { default as RecommendationBoard } from './RecommendationBoard/RecommendationBoard'
+export { default as ShopMoneyCard } from './ShopMoneyCard/ShopMoneyCard'
+export { default as WeekDays } from './WeekDays/WeekDays'

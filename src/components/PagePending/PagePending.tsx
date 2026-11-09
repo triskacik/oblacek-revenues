@@ -1,9 +1,9 @@
 import Main from '../Main/Main'
-import { Spinner } from '../ui'
+import Mascot from '../Mascot/Mascot'
 
 const PagePending = () => (
-  <Main fixed className='items-center justify-center'>
-    <Spinner className='size-6 text-muted-foreground' />
+  <Main className='flex min-h-[50svh] items-center justify-center'>
+    <Mascot className='w-20 animate-bounce opacity-70' />
   </Main>
 )
 

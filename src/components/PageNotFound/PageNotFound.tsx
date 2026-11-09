@@ -1,24 +1,16 @@
 import { Link } from '@tanstack/react-router'
-import { Home, SearchX } from 'lucide-react'
 import Main from '../Main/Main'
-import { Alert, AlertDescription, AlertTitle, Button } from '../ui'
+import Mascot from '../Mascot/Mascot'
+import { Button } from '../ui'
 
 const PageNotFound = () => (
-  <Main>
-    <Alert>
-      <SearchX />
-      <AlertTitle>Stránka neexistuje</AlertTitle>
-      <AlertDescription>
-        <p>Tahle adresa v aplikaci není.</p>
-        <div className='mt-6'>
-          <Button asChild variant='outline'>
-            <Link to='/'>
-              <Home /> Domů
-            </Link>
-          </Button>
-        </div>
-      </AlertDescription>
-    </Alert>
+  <Main className='flex flex-col items-center gap-5 text-center'>
+    <Mascot className='w-32' />
+    <h1 className='font-chalk text-4xl text-olive'>Tady nic není</h1>
+    <p className='text-muted-foreground'>Obláček zabloudil. Vrátíme se domů?</p>
+    <Button asChild className='rounded-full'>
+      <Link to='/'>Domů</Link>
+    </Button>
   </Main>
 )
 

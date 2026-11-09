@@ -1,9 +1,7 @@
 import { fetchIsAllowedUser } from '@/api/access'
 import { queryKeys } from '@/api/queryKeys'
 import { getSession } from '@/auth/session'
-import { AppSidebar, BottomNav } from '@/components'
-import { SidebarInset } from '@/components/ui'
-import SidebarProvider from '@/components/ui/Sidebar/context/SidebarProvider'
+import { AppHeader, BottomNav } from '@/components'
 import useRedirectOnSignOut from '@/hooks/useRedirectOnSignOut'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
@@ -11,13 +9,11 @@ const Layout = () => {
   useRedirectOnSignOut()
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset className='@container/content'>
-        <Outlet />
-      </SidebarInset>
+    <div className='min-h-svh'>
+      <AppHeader />
+      <Outlet />
       <BottomNav />
-    </SidebarProvider>
+    </div>
   )
 }
 

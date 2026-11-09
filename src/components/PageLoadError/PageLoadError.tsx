@@ -1,8 +1,9 @@
 import { Link, type ErrorComponentProps } from '@tanstack/react-router'
-import { AlertCircleIcon, ArrowLeft, Home, RefreshCw } from 'lucide-react'
+import { Home, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 import Main from '../Main/Main'
-import { Alert, AlertDescription, AlertTitle, Button } from '../ui'
+import Mascot from '../Mascot/Mascot'
+import { Button } from '../ui'
 
 type Props = Pick<ErrorComponentProps, 'error'>
 
@@ -12,46 +13,36 @@ const PageLoadError = ({ error: rawError }: Props) => {
   const error = rawError instanceof Error ? rawError : new Error(String(rawError))
 
   return (
-    <Main>
-      <Alert variant='destructive'>
-        <AlertCircleIcon />
-        <AlertTitle>Nepovedlo se načíst stránku.</AlertTitle>
-        <AlertDescription>
-          Obnovte stránku, nebo to zkuste později.
-          <ul className='mt-5 list-inside list-disc space-y-2 text-sm'>
-            {error.message ? (
-              <li>
-                <span className='me-1 font-semibold'>Chyba:</span>
-                {error.message}
-              </li>
-            ) : null}
-            {error.stack ? (
-              <li>
-                {showDetail ? (
-                  <span className='whitespace-pre-wrap'>{error.stack}</span>
-                ) : (
-                  <Button size='sm' variant='outline' onClick={() => setShowDetail(true)}>
-                    Zobrazit detail
-                  </Button>
-                )}
-              </li>
-            ) : null}
-          </ul>
-          <div className='mt-8 flex flex-wrap items-center gap-3'>
-            <Button variant='outline' onClick={() => window.location.reload()}>
-              <RefreshCw /> Obnovit stránku
-            </Button>
-            <Button variant='outline' onClick={() => window.history.back()}>
-              <ArrowLeft /> Zpět
-            </Button>
-            <Button asChild variant='outline'>
-              <Link to='/'>
-                <Home /> Domů
-              </Link>
-            </Button>
-          </div>
-        </AlertDescription>
-      </Alert>
+    <Main className='flex flex-col items-center gap-5 text-center'>
+      <Mascot className='w-32' />
+      <h1 className='font-chalk text-4xl text-olive'>Něco se pokazilo</h1>
+      <p className='max-w-md text-muted-foreground'>
+        Stránku se nepodařilo načíst. Data jsou v bezpečí, zkus ji prosím obnovit.
+      </p>
+      <div className='flex flex-wrap justify-center gap-3'>
+        <Button className='rounded-full' onClick={() => window.location.reload()}>
+          <RefreshCw /> Obnovit
+        </Button>
+        <Button asChild className='rounded-full' variant='outline'>
+          <Link to='/'>
+            <Home /> Domů
+          </Link>
+        </Button>
+      </div>
+      {showDetail ? (
+        <pre className='max-w-full overflow-auto rounded-xl bg-secondary p-4 text-left text-xs whitespace-pre-wrap'>
+          {error.message}
+          {error.stack ? `\n\n${error.stack}` : null}
+        </pre>
+      ) : (
+        <button
+          className='text-xs text-muted-foreground underline underline-offset-4'
+          type='button'
+          onClick={() => setShowDetail(true)}
+        >
+          Technické detaily
+        </button>
+      )}
     </Main>
   )
 }

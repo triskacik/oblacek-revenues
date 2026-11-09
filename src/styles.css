@@ -1,131 +1,75 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
-@import '@fontsource/open-sans/400.css';
-@import '@fontsource/open-sans/600.css';
-@import '@fontsource/open-sans/700.css';
+@import '@fontsource-variable/nunito';
+@import '@fontsource/caveat-brush/latin-400.css';
+@import '@fontsource/caveat-brush/latin-ext-400.css';
 
+/*
+ * Single light theme, derived from the Potraviny Obláček logo (cream paper, olive ink, terracotta basket).
+ * There is intentionally no dark mode. The class-based `dark` variant is kept only so that `dark:`
+ * utilities inside shadcn primitives never react to the OS setting (no `.dark` class is ever set).
+ */
 @custom-variant dark (&:is(.dark *));
 
-body {
-  @apply m-0;
-  font-family:
-    'Open Sans',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    'Helvetica Neue',
-    sans-serif;
-
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  input[type='number']::-webkit-inner-spin-button,
-  input[type='number']::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  input[type='date'] {
-    position: relative;
-  }
-  input[type='date']::-webkit-calendar-picker-indicator {
-    opacity: 1; /* keep visible */
-    position: absolute;
-    right: 0.5rem; /* pull it out of the content box */
-    pointer-events: auto;
-  }
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
-
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.148 0.004 228.8);
-  --primary: oklch(0.218 0.008 223.9);
-  --primary-foreground: oklch(0.987 0.002 197.1);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --warning: oklch(0.65 0.15 85);
-  --warning-foreground: oklch(0.65 0.15 85);
-  --success: oklch(0.48 0.22 134.699);
-  --success-foreground: oklch(0.48 0.22 134.699);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.871 0.006 286.286);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
+  /* Brand */
+  --cream: #f9f3e8; /* logo background */
+  --olive: #464c32; /* logo lettering */
+  --olive-soft: #6b7350;
+  --terracotta: #96573a; /* basket, "POTRAVINY" */
+  --terracotta-soft: #f1dfd2;
+  --tan: #c8a27a; /* sparkles */
+  --blush: #d38d70; /* cheeks */
+  --sage: #7d9460;
+  --sage-soft: #e5ead6;
+  --honey: #c6923e;
+  --honey-soft: #f6e8cc;
 
-  --sidebar: oklch(1 0 0);
-  --topbar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.871 0.006 286.286);
-}
+  /* Shop chalkboard */
+  --chalkboard: #2f3833;
+  --chalk: #f5f0e4;
+  --chalk-dim: #c9c6b8;
+  --chalk-frame: #b98e60;
 
-.dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.195 0.005 285.823);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.225 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.75 0.18 25.723);
-  --destructive-foreground: oklch(0.75 0.18 25.723);
-  --warning: oklch(0.82 0.16 85);
-  --warning-foreground: oklch(0.82 0.16 85);
-  --success: oklch(0.72 0.19 134.699);
-  --success-foreground: oklch(0.72 0.19 134.699);
-  --border: oklch(0.274 0.006 286.033);
-  --input: oklch(0.29 0.006 286.033);
-  --ring: oklch(0.442 0.017 285.786);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --topbar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.985 0 0);
-  --sidebar-primary-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.274 0.006 286.033);
-  --sidebar-ring: oklch(0.442 0.017 285.786);
+  /* shadcn tokens */
+  --background: var(--cream);
+  --foreground: #393e2a;
+  --card: #fffbf4;
+  --card-foreground: #393e2a;
+  --popover: #fffbf4;
+  --popover-foreground: #393e2a;
+  --primary: var(--olive);
+  --primary-foreground: var(--cream);
+  --secondary: #efe6d4;
+  --secondary-foreground: #393e2a;
+  --muted: #f1e9da;
+  --muted-foreground: #807b66;
+  --accent: var(--terracotta-soft);
+  --accent-foreground: #7a4329;
+  /* Deliberately soft: the app helps, it doesn't scold. Reserved for real errors. */
+  --destructive: #b0603f;
+  --destructive-foreground: #b0603f;
+  --warning: var(--honey);
+  --warning-foreground: #8a6421;
+  --success: var(--sage);
+  --success-foreground: #56693f;
+  --border: #e7dcc8;
+  --input: #e2d5bd;
+  --ring: #a9b38c;
+  --radius: 1rem;
+
+  /* Charts (olive, terracotta, tan, sage, blush) */
+  --chart-1: var(--olive);
+  --chart-2: var(--terracotta);
+  --chart-3: var(--tan);
+  --chart-4: var(--sage);
+  --chart-5: var(--blush);
 }
 
 @theme inline {
+  --font-sans: 'Nunito Variable', ui-rounded, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-chalk: 'Caveat Brush', 'Comic Sans MS', cursive;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -154,26 +98,74 @@ code {
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+
+  --color-cream: var(--cream);
+  --color-olive: var(--olive);
+  --color-olive-soft: var(--olive-soft);
+  --color-terracotta: var(--terracotta);
+  --color-terracotta-soft: var(--terracotta-soft);
+  --color-tan: var(--tan);
+  --color-blush: var(--blush);
+  --color-sage: var(--sage);
+  --color-sage-soft: var(--sage-soft);
+  --color-honey: var(--honey);
+  --color-honey-soft: var(--honey-soft);
+  --color-chalkboard: var(--chalkboard);
+  --color-chalk: var(--chalk);
+  --color-chalk-dim: var(--chalk-dim);
+  --color-chalk-frame: var(--chalk-frame);
+
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-topbar: var(--topbar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    color-scheme: light;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply m-0 bg-background font-sans text-foreground antialiased;
+  }
+
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+@layer utilities {
+  /* Handwritten chalk lettering, also used for headings on the cream background. */
+  .font-chalk {
+    font-family: var(--font-chalk);
+    letter-spacing: 0.01em;
+  }
+
+  /* Slate with grain and old smudges, like the boards in the shop. */
+  .chalkboard-surface {
+    background-color: var(--chalkboard);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+      radial-gradient(ellipse at 18% 28%, rgb(255 255 255 / 0.07), transparent 55%),
+      radial-gradient(ellipse at 82% 76%, rgb(255 255 255 / 0.05), transparent 50%),
+      radial-gradient(ellipse at 60% 10%, rgb(255 255 255 / 0.04), transparent 40%);
+    box-shadow:
+      inset 0 0 40px rgb(0 0 0 / 0.35),
+      0 10px 24px -12px rgb(70 76 50 / 0.45);
+  }
+
+  /* Slightly fuzzy edges so white text reads as chalk, not as a font. */
+  .chalk-text {
+    color: var(--chalk);
+    text-shadow:
+      0 0 1px rgb(255 255 255 / 0.55),
+      0 0 6px rgb(255 255 255 / 0.12);
   }
 }

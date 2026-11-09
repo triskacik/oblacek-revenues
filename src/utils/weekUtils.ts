@@ -84,3 +84,19 @@ export const shiftMonthId = (monthId: string, delta: number) => {
 
 /** e.g. `listopad 2026` */
 export const formatMonth = (firstDay: Date) => format(firstDay, 'LLLL yyyy', { locale: cs })
+
+/** Mondays of the weeks that belong to the month (by their Thursday). */
+export const getMonthWeekStarts = (firstDay: Date) => {
+  const monthId = toMonthId(firstDay)
+  const mondays: Date[] = []
+  let monday = startOfISOWeek(firstDay)
+  if (getWeekMonthId(monday) !== monthId) monday = addWeeks(monday, 1)
+  while (getWeekMonthId(monday) === monthId) {
+    mondays.push(monday)
+    monday = addWeeks(monday, 1)
+  }
+  return mondays
+}
+
+/** e.g. `po 10. 11.` */
+export const formatDayShort = (date: Date) => format(date, 'EEEEEE d. M.', { locale: cs })

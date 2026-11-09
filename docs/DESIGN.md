@@ -68,6 +68,30 @@ v ďalšom týždni a predavačka môže dostať viac.
 - **Laptop = dashboard** (viac stĺpcov, grafy, všetko podstatné bez scrollovania).
   **Mobil = rýchle zapisovanie** (spodná lišta, karty pod sebou, pridať záznam = 2 ťuknutia).
 
+## Vizuálny štýl
+
+Appka je pre Sáru (26), nie pre účtovníka. Má pôsobiť **priateľsky, mierne „cute“ a pokojne** a
+nesmie ju **stresovať**. Vizuál nemusí pripomínať `benefit-ng-react`, z neho sa preberá iba stack
+a štruktúra kódu.
+
+- **Jedna svetlá téma, žiadny dark mode.** Pozadie je krémové ako logo (`#f9f3e8`).
+- **Farby z loga**: olivová (písmo loga) pre text a primárne prvky, terakota (košík) pre akcenty,
+  doplnkovo béžová, šalviová, medová a „líčka“ (blush). Tokeny sú v `src/styles.css`.
+- **Žiadna červená.** Strata alebo chýbajúce peniaze sú terakotové a s podporným textom
+  („Tento týden se tolik nedařilo, chybí 1 200 Kč. To se stává, dorovná to další týden.“).
+  `destructive` je iba pre skutočné chyby appky.
+- **Logo a maskot**: logo v hlavičke a na prihlásení; obláčik z loga (`public/brand/mascot.png`)
+  v prázdnych stavoch, pri načítaní a na chybových stránkach.
+- **Kriedové tabule**: najdôležitejšie veci (odporúčaná výplata, checklist fixných nákladov) sú
+  ako tabuľa v obchode: tmavá bridlica v drevenom ráme, biele kriedové písmo (`Chalkboard`).
+  Tabule sú vzácne, nie všade.
+- **Písma**: _Caveat Brush_ (krieda / ručne písané) na nadpisy a tabule, _Nunito_ (zaoblené,
+  čitateľné) na všetko ostatné a na čísla.
+- **Shadcn** komponenty ostávajú skoro defaultné, vzhľad dávajú tokeny, zaoblenie a farby.
+- **Tón textov**: tykanie, krátko, ľudsky („Zatím v klidu“, „Mrkneme, jak se obchodu daří?“).
+- **Layout**: hlavička s logom a „pilulkovou“ navigáciou na desktope (bez sidebaru), plávajúca
+  spodná lišta na mobile.
+
 ---
 
 ## Pojmy
@@ -183,7 +207,7 @@ Keď spätný záznam zmení obálky, zmení sa aj aktuálne odporúčanie. „J
 
 ## Obrazovky
 
-Desktop: **ľavý sidebar** (ako `benefit-ng-react`, shadcn Sidebar) + obsah v gride.
+Desktop: **hlavička** s logom, pilulkovou navigáciou (Týden · Měsíc · Přehled) a menu používateľa (Nastavení, Odhlásit) + obsah v gride.
 Mobil: **spodná lišta** _Týden · Měsíc · [+] · Přehled_, obsah v jednom stĺpci.
 **+ Přidat** (header na desktope, [+] na mobile) → _Výdaj / Tržba / Zásilkovna_.
 
@@ -240,7 +264,7 @@ schované pod „+“; výsledok sa prepočítava živo), `FixedCostModal`.
 ### Grafy
 
 recharts cez shadcn `Chart` komponent (rovnaký základ ako v `benefit-ng-react`). Pred písaním
-grafov načítať `dataviz` skill (farby, light/dark, popisky). Málo farieb: príjmy / výdaje / výplata.
+grafov načítať `dataviz` skill. Iba svetlá téma, farby z loga (`--chart-1…5`). Málo farieb: príjmy / výdaje / výplata.
 
 ---
 
@@ -326,7 +350,7 @@ Podrobný postup je v [README.md](../README.md#nastavenie-supabase).
 react-hook-form + Zod 4 so zjednodušeným `HookForm` / `HFField` patternom,
 shadcn **new-york / zinc** v `components/ui/<Name>/<Name>.tsx` + barrel, lucide-react, recharts,
 date-fns (`cs`), Sonner iba cez `@/lib/toast`, arrow komponenty, `type Props`,
-`pages/<Feature>/<Screen>/comps/`, AppSidebar, rovnaký Prettier a ESLint.
+`pages/<Feature>/<Screen>/comps/`, rovnaký Prettier a ESLint. Vizuál je vlastný (viď Vizuálny štýl).
 
 | benefit-ng-react               | tu                                                                              |
 | ------------------------------ | ------------------------------------------------------------------------------- |
@@ -340,7 +364,8 @@ date-fns (`cs`), Sonner iba cez `@/lib/toast`, arrow komponenty, `type Props`,
 src/
   api/            supabaseClient.ts, queryKeys.ts, expenses.ts, sales.ts, otherIncomes.ts,
                   fixedCosts.ts, fixedCostPayments.ts, weekClosings.ts, settings.ts
-  components/     AppSidebar, BottomNav, AddMenu, PageHeader, MoneyInput, StatTile, AlertsPanel,
+  components/     AppHeader, UserMenu, BottomNav, AddMenu, PageHeader, Chalkboard, Mascot,
+                  EmptyState, PeriodNav, MoneyInput, StatTile, AlertsPanel,
                   HowCalculated, HookForm/…, ui/
   hooks/          useSession, useLedger (načíta dáta od počátečního stavu)
   lib/            toast.ts, utils.ts (cn)

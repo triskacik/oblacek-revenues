@@ -1,21 +1,16 @@
 import { cn } from '@/lib/utils'
 
 type Props = React.HTMLAttributes<HTMLElement> & {
-  fixed?: boolean
-  fluid?: boolean
   ref?: React.Ref<HTMLElement>
 }
 
-const Main = ({ fixed, className, fluid, ...props }: Props) => (
+const Main = ({ className, ...props }: Props) => (
   <main
     className={cn(
-      // Bottom padding leaves room for the mobile bottom navigation.
-      'h-full w-full px-4 md:px-6 pt-4 pb-24 md:pb-6',
-      fixed && 'flex grow flex-col overflow-hidden',
-      !fluid && '@7xl/content:mx-auto @7xl/content:w-full @7xl/content:max-w-7xl',
+      // Bottom padding leaves room for the floating mobile navigation.
+      'mx-auto w-full max-w-6xl px-4 pt-6 pb-28 md:px-8 md:pt-8 md:pb-12',
       className
     )}
-    data-layout={fixed ? 'fixed' : 'auto'}
     {...props}
   />
 )

@@ -1,22 +1,22 @@
-import { Main, PageHeader } from '@/components'
-import { PlaceholderCard } from '@/pages/comps'
+import { EmptyState, Main, PageHeader } from '@/components'
+import { CalendarCheck, House } from 'lucide-react'
 
 const SettingsPage = () => (
-  <>
+  <Main>
     <PageHeader title='Nastavení' />
-    <Main>
-      <div className='grid gap-4 lg:grid-cols-2'>
-        <PlaceholderCard
-          description='Nájem, služby… částka od měsíce, splatnost.'
-          title='Fixní náklady'
-        />
-        <PlaceholderCard
-          description='Od kdy aplikaci používáte a kolik peněz obchod měl.'
-          title='Počáteční stav'
-        />
-      </div>
-    </Main>
-  </>
+    <div className='grid gap-6 lg:grid-cols-2'>
+      <EmptyState
+        description='Nájem, elektřina, internet… Částka platí od zvoleného měsíce, takže změna nepřepíše minulost.'
+        icon={House}
+        title='Fixní náklady'
+      />
+      <EmptyState
+        description='Od kdy aplikaci používáš a kolik peněz obchod v ten den měl.'
+        icon={CalendarCheck}
+        title='Začátek'
+      />
+    </div>
+  </Main>
 )
 
 export default SettingsPage

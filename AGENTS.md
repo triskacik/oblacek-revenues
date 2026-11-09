@@ -53,9 +53,28 @@ If you are unsure whether something touches production data — stop and ask.
 
 ---
 
+## Visual design
+
+The look is our own — **do not copy benefit-ng-react's UI**; only its stack and code structure.
+Target user: Sára (26). Friendly, a bit cute, calm. Full rules: `docs/DESIGN.md` → Vizuálny štýl.
+
+- **One light theme. No dark mode**, no theme switcher, never set a `.dark` class.
+- Colors come from the Potraviny Obláček logo; use the tokens in `src/styles.css`
+  (`olive`, `terracotta`, `tan`, `sage`, `honey`, `blush`, `chalkboard`, `chalk`…), never raw hex in TSX.
+- **No red and no alarming copy.** Shortfalls are terracotta with supportive wording. `destructive`
+  is only for real app errors.
+- `Chalkboard` (slate + wooden frame + `font-chalk chalk-text`) for the few most important things
+  (payout recommendation, fixed-cost checklist). Don't turn every card into a board.
+- Headings: `font-chalk` (Caveat Brush). Body and numbers: Nunito (`font-sans`, `tabular-nums`).
+- `Mascot` (cloud from the logo) for empty, loading and error states. Logo files in `public/brand/`.
+- Czech copy uses informal "ty" (tykání), short and human.
+- shadcn primitives stay close to default; style through tokens and `className`.
+
+---
+
 ## Tech stack
 
-Mirrors `/Users/tomastr/React/benefit-ng-react` (Tomáš reviews both; keep them feeling the same). When in
+Mirrors the **stack and code structure** of `/Users/tomastr/React/benefit-ng-react` (Tomáš reviews both; the code should feel the same — the UI should not). When in
 doubt, copy the pattern from there (its `CLAUDE.md` is the detailed reference) — minus tenants, MSAL, Orval
 and i18n.
 

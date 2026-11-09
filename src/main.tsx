@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom/client'
 import { isSupabaseConfigured } from './api/supabaseClient'
 import { PageLoadError, PageNotFound, PagePending, SetupMissing } from './components'
 import { Toaster } from './components/ui'
-import ThemeProvider from './contexts/Theme/ThemeProvider'
 import { routeTree } from './routeTree.gen'
 import './styles.css'
 
@@ -42,10 +41,8 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       {isSupabaseConfigured ? (
         <QueryClientProvider client={queryClient}>
-          <ThemeProvider>
-            <RouterProvider router={router} />
-            <Toaster position='top-center' />
-          </ThemeProvider>
+          <RouterProvider router={router} />
+          <Toaster position='top-center' />
         </QueryClientProvider>
       ) : (
         <SetupMissing />
