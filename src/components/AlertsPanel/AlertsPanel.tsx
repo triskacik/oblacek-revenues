@@ -1,24 +1,26 @@
+import { useDismissAlert } from '@/api/dismissedAlerts'
 import useAddEntry from '@/hooks/useAddEntry'
+import { toast } from '@/lib/toast'
 import { cn } from '@/lib/utils'
-import type { Ledger } from '@/types'
-import { getAlerts, type Alert, type AlertKind } from '@/utils/alertsUtils'
+import type { Alert, AlertKind } from '@/utils/alertsUtils'
 import { Link } from '@tanstack/react-router'
 import {
   ClipboardList,
+  Copy,
+  EyeOff,
   HandCoins,
   House,
-  Leaf,
   Package,
-  PiggyBank,
   ReceiptText,
   Settings,
   ShoppingBasket,
   type LucideIcon,
 } from 'lucide-react'
-import { Button, Skeleton } from '../ui'
+import { Button, Skeleton, Tooltip, TooltipContent, TooltipTrigger } from '../ui'
 
 type Props = {
-  ledger: Ledger | null
+  /** `null` while loading. Nothing is rendered when there is nothing to do. */
+  alerts: Alert[] | null
   className?: string
 }
 
@@ -26,9 +28,10 @@ const kindConfig: Record<AlertKind, { icon: LucideIcon; action: string }> = {
   setup: { icon: Settings, action: 'Nastavit' },
   missingSales: { icon: ShoppingBasket, action: 'Doplnit' },
   unclosedWeek: { icon: HandCoins, action: 'Uzavřít' },
-  zasilkovna: { icon: Package, action: 'Zapsat' },
   unpaid: { icon: House, action: 'Odškrtnout' },
-  notCovered: { icon: PiggyBank, action: 'Ukázat' },
+  zasilkovna: { icon: Package, action: 'Zapsat' },
+  noExpenses: { icon: ReceiptText, action: 'Ukázat' },
+  duplicateSales: { icon: Copy, action: 'Ukázat' },
   reserve: { icon: ReceiptText, action: 'Ukázat' },
 }
 
@@ -77,29 +80,21 @@ const AlertAction = ({ alert, label }: { alert: Alert; label: string }) => {
   )
 }
 
-/** What needs doing, most important first. Calm when there's nothing. */
-const AlertsPanel = ({ ledger, className }: Props) => {
-  if (!ledger) return <Skeleton className={cn('h-24 rounded-2xl', className)} />
+/** "Co je potřeba udělat": to-dos first, then hints that can be hidden. */
+const AlertsPanel = ({ alerts, className }: Props) => {
+  const dismiss = useDismissAlert()
 
-  const alerts = getAlerts(ledger, new Date())
+  if (!alerts) return <Skeleton className={cn('h-24 rounded-2xl', className)} />
+  // Calm when there's nothing: the month tracker above already says "all done".
+  if (alerts.length === 0) return null
 
-  if (alerts.length === 0) {
-    return (
-      <section
-        className={cn(
-          'flex items-center gap-3 rounded-2xl border border-border bg-card px-5 py-4 shadow-sm shadow-olive/5',
-          className
-        )}
-      >
-        <span className='flex size-10 shrink-0 items-center justify-center rounded-full bg-sage-soft text-success-foreground'>
-          <Leaf className='size-5' />
-        </span>
-        <div>
-          <h2 className='font-chalk text-2xl leading-none text-olive'>Všechno v klidu</h2>
-          <p className='mt-1 text-sm text-muted-foreground'>Teď není potřeba nic dělat.</p>
-        </div>
-      </section>
-    )
+  const onDismiss = async (alert: Alert) => {
+    try {
+      await dismiss.mutateAsync(alert.id)
+      toast('Upozornění skryto', { description: 'Zobrazit ho znovu můžeš v Nastavení.' })
+    } catch {
+      toast.error('Nepovedlo se, zkus to prosím znovu.')
+    }
   }
 
   return (
@@ -122,7 +117,7 @@ const AlertsPanel = ({ ledger, className }: Props) => {
         {alerts.map(alert => {
           const { icon: Icon, action } = kindConfig[alert.kind]
           return (
-            <li className='flex items-center gap-3 py-3 last:pb-0' key={alert.id}>
+            <li className='flex items-start gap-3 py-3 last:pb-0 sm:items-center' key={alert.id}>
               <span
                 className={cn(
                   'flex size-9 shrink-0 items-center justify-center rounded-full',
@@ -131,13 +126,36 @@ const AlertsPanel = ({ ledger, className }: Props) => {
               >
                 <Icon className='size-4' />
               </span>
-              <div className='min-w-0 flex-1'>
-                <p className='text-sm font-semibold'>{alert.title}</p>
-                {alert.description ? (
-                  <p className='text-xs text-muted-foreground'>{alert.description}</p>
-                ) : null}
+              {/* On phones the buttons go under the text so the text keeps its width. */}
+              <div className='flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3'>
+                <div className='min-w-0 flex-1'>
+                  <p className='text-sm font-semibold'>{alert.title}</p>
+                  {alert.description ? (
+                    <p className='text-xs text-muted-foreground'>{alert.description}</p>
+                  ) : null}
+                </div>
+                <div className='flex shrink-0 items-center gap-1'>
+                  <AlertAction alert={alert} label={action} />
+                  {alert.dismissible ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          aria-label='Skrýt upozornění'
+                          className='rounded-full text-muted-foreground'
+                          disabled={dismiss.isPending}
+                          size='sm'
+                          variant='ghost'
+                          onClick={() => onDismiss(alert)}
+                        >
+                          <EyeOff className='size-4' />
+                          <span className='sm:sr-only'>Skrýt</span>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Skrýt upozornění, už ho neukazovat</TooltipContent>
+                    </Tooltip>
+                  ) : null}
+                </div>
               </div>
-              <AlertAction alert={alert} label={action} />
             </li>
           )
         })}

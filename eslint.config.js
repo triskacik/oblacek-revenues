@@ -10,7 +10,7 @@ export default defineConfig([
   tseslint.configs.recommended,
   eslintPluginPrettierRecommended,
   {
-    ignores: ['dist', 'src/routeTree.gen.ts', 'src/types/supabase.gen.ts', 'supabase/.temp'],
+    ignores: ['dist', 'src/routeTree.gen.ts', 'src/types/supabase.gen.ts', 'supabase'],
   },
   {
     files: ['**/*.{ts,tsx}'],

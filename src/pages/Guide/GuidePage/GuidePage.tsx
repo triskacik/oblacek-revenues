@@ -5,6 +5,7 @@ import {
   CalendarDays,
   CalendarHeart,
   ChartSpline,
+  CircleGauge,
   CircleHelp,
   Footprints,
   Plus,
@@ -13,7 +14,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { AlertsList, EnvelopeExplainer, FaqList, GuideSection, StepCard } from './comps'
+import { AlertsList, EnvelopeExplainer, FaqList, GuideSection, PushList, StepCard } from './comps'
 import useScrollSpy from './hooks/useScrollSpy'
 
 const sections = [
@@ -28,17 +29,22 @@ const screens: { icon: LucideIcon; title: string; text: string }[] = [
   {
     icon: CalendarDays,
     title: 'Týden',
-    text: 'Hlavní obrazovka. Nahoře co je potřeba udělat, pak tržby a výdaje, den po dni, tabule s výplatou pro prodavačku, peníze obchodu a fixní náklady k odškrtnutí.',
+    text: 'Hlavní obrazovka. Nahoře co je potřeba udělat (jen když něco čeká), pak tržby a výdaje, den po dni, tabule s výplatou pro prodavačku a fixní náklady k odškrtnutí.',
   },
   {
     icon: CalendarHeart,
     title: 'Měsíc',
-    text: 'Jak šel celý měsíc: součty, výsledek, týdny s uzávěrkami, graf, fixní náklady a Zásilkovna.',
+    text: 'Celý měsíc: jak jsi na tom s fixními náklady (pruh s týdny), tržby, výdaje, výplaty a výsledek měsíce (zeleně v plusu, červeně v mínusu), graf, týdny s uzávěrkami, fixní náklady k odškrtnutí a Zásilkovna.',
   },
   {
     icon: ChartSpline,
     title: 'Přehled',
     text: 'Delší čas: měsíc po měsíci, výsledky měsíců, jak rostou peníze obchodu a součty od otevření.',
+  },
+  {
+    icon: CircleGauge,
+    title: 'Kroužek v hlavičce',
+    text: 'Vždycky na očích, na každé stránce. Oblouk ukazuje, kolik z fixních nákladů měsíce už máš odloženo, uprostřed je fajfka (odkládáš včas) nebo vykřičník (trochu pozadu) a kolečko s číslem říká, kolik věcí čeká. Klikni a uvidíš detail měsíce, peníze obchodu a úkoly.',
   },
   {
     icon: Plus,
@@ -48,7 +54,7 @@ const screens: { icon: LucideIcon; title: string; text: string }[] = [
   {
     icon: Settings,
     title: 'Nastavení',
-    text: 'Fixní náklady, otevírací dny a zavírací doba, den otevření obchodu a počáteční peníze. V menu pod tvou fotkou.',
+    text: 'Fixní náklady, otevírací dny a zavírací doba, upozornění do mobilu, den otevření obchodu, počáteční peníze a skrytá upozornění. V menu pod tvou fotkou.',
   },
 ]
 
@@ -110,8 +116,9 @@ const GuidePage = () => {
                 why='Z tržeb počítám výplatu. Bez nich nevím, kolik peněz obchod má.'
               >
                 <p>
-                  Klikni na <strong>Přidat → Tržba</strong>, nebo na <strong>+ tržba</strong> u dne
-                  v přehledu „Den po dni“. Stačí jedno číslo za den.
+                  Nejrychleji v přehledu „Den po dni“: u dnešního dne je políčko{' '}
+                  <strong>Tržba dnes</strong>, napiš částku a dej Enter. Jinak{' '}
+                  <strong>Přidat → Tržba</strong>. Stačí jedno číslo za den.
                 </p>
                 <p>Když bylo výjimečně zavřeno, zapiš 0.</p>
               </StepCard>
@@ -123,7 +130,7 @@ const GuidePage = () => {
               >
                 <p>
                   Zboží, drobnosti, tašky… <strong>Přidat → Výdaj</strong>, částka a den z bločku.
-                  Do poznámky napiš, kde to bylo, ať to pak najdeš.
+                  Do poznámky napiš, kde to bylo. Poznámky, které píšeš často, ti nabídnu k ťuknutí.
                 </p>
                 <p>Nájem, elektřinu a další fixní platby sem nepiš, ty mají vlastní místo.</p>
               </StepCard>
@@ -161,7 +168,8 @@ const GuidePage = () => {
                 why='Tak vím, co už je zaplacené, a hlídám splatnost toho, co ještě ne.'
               >
                 <p>
-                  Na tabuli <strong>Fixní náklady</strong> klikni na položku a křídou se odškrtne.
+                  Na tabuli <strong>Fixní náklady</strong> (na Týdnu i na Měsíci) klikni na položku
+                  a křídou se odškrtne.
                 </p>
               </StepCard>
               <StepCard
@@ -175,6 +183,18 @@ const GuidePage = () => {
                   je minulý měsíc.
                 </p>
               </StepCard>
+              <StepCard
+                number={7}
+                title='Mrkni na kroužek'
+                when='Kdykoli otevřeš aplikaci'
+                why='Na první pohled víš, jestli je všechno v pořádku, a nic důležitého ti neuteče.'
+              >
+                <p>
+                  Vpravo nahoře je kroužek. <strong>Fajfka</strong> znamená, že na fixní náklady
+                  odkládáš včas, <strong>vykřičník</strong>, že je to trochu pozadu. Kolečko s
+                  číslem ukazuje, kolik věcí čeká. Klikni na kroužek a uvidíš podrobnosti.
+                </p>
+              </StepCard>
             </ol>
           </GuideSection>
 
@@ -185,6 +205,17 @@ const GuidePage = () => {
             title='Jak to počítám'
           >
             <EnvelopeExplainer />
+            <div className='mt-6 rounded-2xl border border-border bg-card p-5'>
+              <h3 className='font-bold'>Jak jsi na tom s fixními náklady</h3>
+              <p className='mt-1.5 text-sm leading-relaxed text-muted-foreground'>
+                Kroužek v hlavičce a pruh na stránce Měsíc ukazují, kolik z fixních nákladů měsíce
+                už máš odloženo. Pruh má zářez za každý týden a červenohnědá čárka značí, kolik by
+                mělo být odloženo po skončených týdnech, aby na konci měsíce bylo dost. Když jsi
+                před ní, <strong>odkládáš včas</strong> a v kroužku je fajfka. Když za ní, je to{' '}
+                <strong>trochu pozadu</strong> (v kroužku vykřičník) a dorovná se to v dalších
+                týdnech.
+              </p>
+            </div>
             <ul className='mt-6 grid gap-3 text-sm sm:grid-cols-2'>
               <li className='rounded-2xl bg-secondary/60 p-4'>
                 <strong>Nájem nevadí, když zaplatíš dřív.</strong> Zaplacení sníží peníze i to, co
@@ -229,10 +260,11 @@ const GuidePage = () => {
           <GuideSection
             icon={BellRing}
             id='upozorneni'
-            intro='Nahoře na Týdnu je panel „Co je potřeba udělat“. Ozvu se jen, když je opravdu co dělat, a u každé věci je tlačítko, které tě tam rovnou dovede.'
+            intro='Na Týdnu je panel „Co je potřeba udělat“ a jejich počet vidíš i v kroužku v hlavičce. Ozvu se jen, když je opravdu co dělat, a u každé věci je tlačítko, které tě tam rovnou dovede. Kontroly typu „je to správně?“ můžeš skrýt ikonou oka, v Nastavení je zase zobrazíš.'
             title='Na co upozorním'
           >
             <AlertsList />
+            <PushList />
           </GuideSection>
 
           <GuideSection icon={CircleHelp} id='otazky' title='Když si nevíš rady'>

@@ -37,3 +37,18 @@ export const useDeleteSale = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.sales.all }),
   })
 }
+
+/**
+ * Puts a just-deleted sale back exactly as it was (same id and created_at), for the
+ * "Vrátit" button in the toast after deleting.
+ */
+export const useRestoreSale = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (row: Sale) => {
+      const { error } = await supabase.from('sales').insert(row)
+      if (error) throw error
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.sales.all }),
+  })
+}

@@ -2,7 +2,7 @@ const faqs: { question: string; answer: string }[] = [
   {
     question: 'Spletla jsem se v částce. Co teď?',
     answer:
-      'Klikni na záznam v přehledu dne, oprav ho a ulož. Nebo ho tam smaž. Všechno se hned přepočítá.',
+      'Klikni na záznam v přehledu dne, oprav ho a ulož. Nebo ho tam smaž. Všechno se hned přepočítá. Když smažeš omylem, v oznámení dole máš 10 sekund na tlačítko Vrátit.',
   },
   {
     question: 'Zapomněla jsem něco zapsat.',
@@ -24,9 +24,48 @@ const faqs: { question: string; answer: string }[] = [
       'V Nastavení u nákladu klikni na Změnit částku a vyber měsíc, od kterého platí nová. Dřívější měsíce zůstanou, jak byly. Když už náklad neplatíš, zadej 0.',
   },
   {
-    question: 'Proč je „odloženo na fixní náklady“ v mínusu?',
+    question: 'Proč nejde uzavřít týden?',
     answer:
-      'Zaplatila jsi nájem dřív, než se na něj stihlo odložit. To je v pořádku, další týdny ho doplní.',
+      'Uzavřít jde, až jsou zapsané tržby za všechny otevřené dny. Tabule napíše, které chybí. Když bylo zavřeno, zapiš tržbu 0.',
+  },
+  {
+    question: 'Proč jsou peníze obchodu v mínusu?',
+    answer:
+      'Nejčastěji proto, že jsi zaplatila nájem dřív, než se na něj stihlo odložit. To je v pořádku, další týdny to doplní. Přesný rozpis najdeš pod „Jak se to počítá“.',
+  },
+  {
+    question: 'Co znamená vykřičník v kroužku?',
+    answer:
+      'Na fixní náklady máš zatím odloženo méně, než by po skončených týdnech mělo být. Nic se neděje, doporučená výplata to v dalších týdnech dorovná.',
+  },
+  {
+    question: 'Přidala jsem fixní náklad omylem.',
+    answer:
+      'V Nastavení u nákladu klikni na tužku a dej Smazat náklad. Jde to jen u nákladu, který ještě nemá žádný zaplacený měsíc. Jinak ho ukonči tlačítkem Změnit částku a částkou 0.',
+  },
+  {
+    question: 'Skryla jsem upozornění omylem.',
+    answer: 'V Nastavení v kartě Skrytá upozornění klikni na Zobrazit znovu.',
+  },
+  {
+    question: 'Kdy je měsíc hotový?',
+    answer:
+      'Na konci měsíce se na stránce Měsíc objeví tabule s tím, co ještě chybí: tržby, uzávěrky týdnů, zaplacené fixní náklady a Zásilkovna. Až je všechno odškrtnuté, měsíc je hotový a čeká tě malá oslava.',
+  },
+  {
+    question: 'Jak zapnout upozornění do mobilu?',
+    answer:
+      'iPhone: otevři Obláček v Safari, klepni na Sdílet a Přidat na plochu. Pak ho otevři z plochy (jen tam upozornění fungují) a v Nastavení u Upozornění klikni na Zapnout a povol je. Android: v Chromu otevři Obláček (můžeš si ho přes menu se třemi tečkami přidat na plochu), v Nastavení u Upozornění klikni na Zapnout a povol je. Na počítači stejně v prohlížeči. Zapíná se na každém zařízení zvlášť.',
+  },
+  {
+    question: 'Nechci dostávat všechna upozornění.',
+    answer:
+      'V Nastavení u Upozornění si každé vypneš přepínačem, jen pro to zařízení. Čas připomínky tržby si tam taky změníš.',
+  },
+  {
+    question: 'Upozornění mi nechodí.',
+    answer:
+      'V Nastavení u Upozornění zkus Poslat zkoušku. Když nepřijde, zkontroluj, že telefon nemá zapnutý režim Nerušit a že má Obláček v nastavení telefonu povolená oznámení. Na iPhonu musí být otevřený z plochy, ne ze Safari.',
   },
   {
     question: 'Kdo moje čísla vidí?',

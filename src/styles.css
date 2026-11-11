@@ -25,6 +25,13 @@
   --honey: #c6923e;
   --honey-soft: #f6e8cc;
 
+  /*
+   * Result of a month (above / below zero). The one deliberate exception to "no red": Tomáš asked
+   * for the month result to stand out at first glance. Use only for that, nowhere else.
+   */
+  --positive: #3f7a2b;
+  --negative: #b83b2a;
+
   /* Shop chalkboard */
   --chalkboard: #2f3833;
   --chalk: #f5f0e4;
@@ -113,6 +120,8 @@
   --color-sage-soft: var(--sage-soft);
   --color-honey: var(--honey);
   --color-honey-soft: var(--honey-soft);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
   --color-chalkboard: var(--chalkboard);
   --color-chalk: var(--chalk);
   --color-chalk-dim: var(--chalk-dim);

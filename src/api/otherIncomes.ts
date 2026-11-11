@@ -48,3 +48,15 @@ export const useDeleteOtherIncome = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.otherIncomes.all }),
   })
 }
+
+/** Puts a just-deleted income back exactly as it was, for the "Vrátit" button after deleting. */
+export const useRestoreOtherIncome = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (row: OtherIncome) => {
+      const { error } = await supabase.from('other_incomes').insert(row)
+      if (error) throw error
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.otherIncomes.all }),
+  })
+}

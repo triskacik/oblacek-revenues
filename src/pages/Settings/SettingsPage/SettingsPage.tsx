@@ -1,7 +1,13 @@
 import { useSettings } from '@/api/settings'
 import { Main, PageHeader } from '@/components'
 import { Skeleton } from '@/components/ui'
-import { FixedCostsCard, OpeningCard, OpeningHoursCard } from './comps'
+import {
+  FixedCostsCard,
+  HiddenAlertsCard,
+  NotificationsCard,
+  OpeningCard,
+  OpeningHoursCard,
+} from './comps'
 
 const SettingsPage = () => {
   const { data: settings, isPending, isError } = useSettings()
@@ -22,7 +28,9 @@ const SettingsPage = () => {
           ) : (
             <>
               <OpeningHoursCard settings={settings} />
+              <NotificationsCard settings={settings} />
               <OpeningCard settings={settings} />
+              <HiddenAlertsCard />
             </>
           )}
         </div>

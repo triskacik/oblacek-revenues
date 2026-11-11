@@ -61,7 +61,8 @@ Target user: Sára (26). Friendly, a bit cute, calm. Full rules: `docs/DESIGN.md
 - **One light theme. No dark mode**, no theme switcher, never set a `.dark` class.
 - Colors come from the Potraviny Obláček logo; use the tokens in `src/styles.css`
   (`olive`, `terracotta`, `tan`, `sage`, `honey`, `blush`, `chalkboard`, `chalk`…), never raw hex in TSX.
-- **No red and no alarming copy.** Shortfalls are terracotta with supportive wording. `destructive`
+- **No red and no alarming copy** (single exception: the month result "Měsíc zatím / celkem" is
+  `text-positive` / `text-negative`, as Tomáš asked). Shortfalls are terracotta with supportive wording. `destructive`
   is only for real app errors.
 - `Chalkboard` (slate + wooden frame + `font-chalk chalk-text`) for the few most important things
   (payout recommendation, fixed-cost checklist). Don't turn every card into a board.

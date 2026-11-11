@@ -28,4 +28,10 @@ export const queryKeys = {
   fixedCostPayments: {
     all: ['fixedCostPayments'] as const,
   },
+  dismissedAlerts: {
+    all: ['dismissedAlerts'] as const,
+  },
+  pushDevice: {
+    current: ['pushDevice'] as const,
+  },
 }

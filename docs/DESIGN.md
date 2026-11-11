@@ -77,7 +77,7 @@ a štruktúra kódu.
 - **Jedna svetlá téma, žiadny dark mode.** Pozadie je krémové ako logo (`#f9f3e8`).
 - **Farby z loga**: olivová (písmo loga) pre text a primárne prvky, terakota (košík) pre akcenty,
   doplnkovo béžová, šalviová, medová a „líčka“ (blush). Tokeny sú v `src/styles.css`.
-- **Žiadna červená.** Strata alebo chýbajúce peniaze sú terakotové a s podporným textom
+- **Žiadna červená** (jediná výnimka: výsledok mesiaca na stránke Mesiac, zelený/červený). Strata alebo chýbajúce peniaze sú terakotové a s podporným textom
   („Tento týden se tolik nedařilo, chybí 1 200 Kč. To se stává, dorovná to další týden.“).
   `destructive` je iba pre skutočné chyby appky.
 - **Logo a maskot**: logo v hlavičke a na prihlásení; obláčik z loga (`public/brand/mascot.png`)
@@ -208,28 +208,114 @@ Keď spätný záznam zmení obálky, zmení sa aj aktuálne odporúčanie. „J
 
 ---
 
+### Rýchle zapisovanie a poistky
+
+- **Tržba dnes priamo v riadku dňa:** pri dnešnom dni bez tržby je namiesto tlačidla pole
+  „Tržba dnes“ (Enter alebo fajka uloží). Modál zostáva na poznámky a opravy.
+- **Návrhy poznámok pri výdaji:** pod poznámkou najčastejšie poznámky za posledných 90 dní
+  („Makro“, „Pekárna“…), ťuk ich vyplní (`noteUtils.ts`).
+- **„Vrátit“ po zmazaní:** po zmazaní tržby, výdaja alebo Zásilkovny ponúkne toast 10 sekúnd
+  tlačidlo Vrátit, ktoré záznam vloží späť presne ako bol (rovnaké id aj `created_at`).
+
+### Měsíc hotový
+
+`getMonthChecklist()` v `trackerUtils.ts`, kriedová tabuľa navrchu stránky **Mesiac**, len pre
+**skončený mesiac** a **posledný týždeň** aktuálneho. Zoznam na odškrtanie: tržby za všetky
+otváracie dni, všetky týždne uzavreté, fixné náklady zaplatené, Zásilkovna zapísaná (alebo jej
+upozornenie skryté = „tento měsíc není“), každá položka s tlačidlom, ktoré to vyrieši. Keď je
+všetko hotové, tabuľa sa zmení na oslavu s obláčikom: **„Listopad je hotový!“**, vyplatené
+predavačke a čo obchodu zostalo.
+
 ## Upozornenia
 
-`getAlerts()` v `src/utils/alertsUtils.ts`. Každé má odkaz, kde to vyriešiť. Úrovne bez červenej:
-`info` (šalviová), `todo` (medová), `important` (terakota). Nič pred `opening_date` (02.11.2026)
-appku nezaujíma.
+`getAlerts()` v `src/utils/alertsUtils.ts`, panel **„Co je potřeba udělat“**. Iba veci, ktoré treba
+**urobiť** alebo **skontrolovať**. Ako ide mesiac (pokrytie, blížiace sa splatnosti, peniaze) ukazuje
+[Prehľad mesiaca](#prehľad-mesiaca). Úrovne bez červenej: `info` (šalviová), `todo` (medová),
+`important` (terakota). Keď nie je čo robiť, panel sa vôbec neukáže.
 
-| Upozornenie                                     | Kedy                                                                                                                                | Úroveň                                             |
-| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| **Zadej, kdy obchod otevřel**                   | chýba `opening_date` (vtedy je to jediné upozornenie)                                                                               | important                                          |
-| **Přidej fixní náklady**                        | nie je zadaný žiadny fixný náklad                                                                                                   | todo                                               |
-| **Chybí tržba** „Chybí tržby za 03.11., 05.11.“ | otvárací deň od `opening_date` bez tržby; **dnešok až po konci pracovnej doby**. Zatvorené = tržba `0`.                             | todo                                               |
-| **Týden 45 skončil**                            | po konci pracovnej doby posledného otváracieho dňa, bez uzávierky (keď chýbajú tržby, povie, že ich treba najprv doplniť)           | todo                                               |
-| **Nezaplaceno za listopad: Nájem**              | tento mesiac od 3 dní pred splatnosťou (bez splatnosti v poslednom týždni mesiaca); **skončený mesiac vždy**, kým nie je odškrtnuté | info, po splatnosti / za skončený mesiac important |
-| **Za říjen ještě není zapsaná Zásilkovna**      | mesiac skončil a Zásilkovna k nemu nie je                                                                                           | info                                               |
-| **Na listopad bude chybět 2 000 Kč**            | posledný týždeň mesiaca, keď ani tento týždeň nepokryje to, čo chýba na fixné náklady                                               | important                                          |
-| **Na říjen nakonec chybělo 2 000 Kč**           | predchádzajúci mesiac má všetky týždne uzavreté a fixné náklady nepokryl; ďalšie odporúčania to dorovnávajú                         | info                                               |
-| **Výdaje po uzávěrce přesáhly rezervu**         | _na nákupy_ uzavretého týždňa < 0                                                                                                   | info                                               |
+**Úlohy** (nedajú sa skryť, sú potrebné pre správne čísla):
 
-Panel „Co je potřeba udělat“ je hneď navrchu týždňa. Každá položka má ikonu podľa druhu, odtieň
-podľa úrovne a tlačidlo s akciou (Doplnit, Uzavřít, Zapsat, Odškrtnout, Nastavit).
+| Upozornenie                                     | Kedy                                                                            | Úroveň    |
+| ----------------------------------------------- | ------------------------------------------------------------------------------- | --------- |
+| **Zadej, kdy obchod otevřel**                   | chýba `opening_date` (vtedy je to jediné upozornenie)                           | important |
+| **Chybí tržba** „Chybí tržby za 03.11., 05.11.“ | otvárací deň od `opening_date` bez tržby; **dnešok až po konci pracovnej doby** | todo      |
+| **Týden 45 skončil**                            | po konci pracovnej doby posledného otváracieho dňa, bez uzávierky               | todo      |
+| **Nezaplaceno za listopad: Nájem**              | fixný náklad **po splatnosti** alebo za **skončený mesiac** a neodškrtnutý      | important |
 
-Viac chýbajúcich vecí rovnakého druhu sa zlúči do jedného upozornenia (napr. všetky dni bez tržby).
+**Kontroly** („Je to správně?“, Sára ich môže **skryť**; skryté sú v tabuľke `dismissed_alerts`,
+zdieľané pre oboch používateľov, v Nastaveniach sa dajú zobraziť znova):
+
+| Upozornenie                                | Kedy                                                             | id                       |
+| ------------------------------------------ | ---------------------------------------------------------------- | ------------------------ |
+| **Přidej fixní náklady**                   | nie je zadaný žiadny fixný náklad                                | `setup-fixed-costs`      |
+| **Týden 45 nemá žádný výdaj**              | skončený týždeň s tržbami a bez jediného výdaja                  | `no-expenses-<pondelok>` |
+| **Na 03.11. jsou zapsané 2 tržby**         | viac tržieb v jeden deň (preklep, alebo hotovosť a karta zvlášť) | `duplicate-sales-<deň>`  |
+| **Za říjen ještě není zapsaná Zásilkovna** | mesiac skončil a Zásilkovna k nemu nie je                        | `zasilkovna-<yyyy-MM>`   |
+| **Po uzávěrce víc výdajů než rezerva**     | _na nákupy_ uzavretého týždňa < 0                                | `reserve-<pondelok>`     |
+
+Do Prehľadu mesiaca sa presunulo: blížiaca sa splatnosť, „na fixné náklady bude chýbať“ a manko
+z minulého mesiaca.
+
+## Notifikácie
+
+Push upozornenia na zariadenia, kde ich niekto zapol (Nastavení → Upozornění, pre každé zariadenie
+zvlášť, chodia na všetky zapnuté zariadenia Sáry aj Tomáša). Iba tieto štyri, nič iné:
+
+| Notifikácia                       | Kedy (čas v Prahe)                                                                       | Kľúč v `notification_log` |
+| --------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------- |
+| **Nezapomeň zapsat dnešní tržbu** | otvárací deň od `opening_date`, od `settings.reminder_time` (20:00), dnes ešte bez tržby | `sale-<deň>`              |
+| **Týden 46 skončil** „uzavři ho“  | sobota od 19:00, týždeň má otváracie dni a nie je uzavretý                               | `close-<pondelok>`        |
+| **Týden 46 nemá žádný výdaj**     | nedeľa od 19:00, týždeň má tržby a žiadny výdaj, kontrola nie je skrytá                  | `noexp-<pondelok>`        |
+| **Zítra je splatný Nájem**        | večer pred splatnosťou (od 19:00), len náklad so splatnosťou, aktívny a ešte nezaplatený | `due-<id nákladu>-<deň>`  |
+
+- Čas pripomienky tržby sa dá zmeniť v Nastaveniach, ostatné časy sú pevné.
+- Každý druh sa dá **pre dané zariadenie vypnúť** prepínačom v Nastaveniach (`push_subscriptions.muted_kinds`: `sale`, `close`, `noexp`, `due`; predvolene chodí všetko). Skúška chodí vždy.
+- V notifikácii **nie sú sumy** (vidno ju na zamknutej obrazovke). Ťuknutie otvorí správny týždeň
+  alebo mesiac.
+- Každá ide von raz: po odoslaní sa zapíše kľúč do `notification_log` (aj keď nie je zapnuté žiadne
+  zariadenie, aby neskôr nechodili staré pripomienky).
+- Technicky: `pg_cron` každých 15 minút cez `pg_net` zavolá Edge Function `send-notifications`
+  (hlavička `x-cron-secret`, adresa a secret sú vo Vault). Funkcia číta dáta cez service role, rozhodne
+  podľa pravidiel vyššie a pošle Web Push (VAPID). Dáta obchodu nikdy nemení. Zariadenie s odpoveďou
+  404/410 sa zo `push_subscriptions` vymaže. Zariadenie: `public/sw.js` (iba notifikácie, žiadna
+  offline cache), `src/lib/push.ts`, `src/api/pushSubscriptions.ts`.
+- **Poslat zkoušku** v Nastaveniach: tá istá funkcia s tokenom prihláseného používateľa (overí
+  `is_allowed_user()`), pošle len na toto zariadenie.
+- iPhone: len appka pridaná na plochu (iOS 16.4+); Nastavenia to vysvetlia.
+- Všetko na free tieroch (Web Push je zadarmo, Edge Functions 500 000 volaní za mesiac).
+- Nastavenie kľúčov: `README.md` → Notifikácie.
+
+## Prehľad mesiaca
+
+`getMonthTracker(ledger, today, month?)` v `src/utils/trackerUtils.ts` (texty v
+`trackerTextUtils.ts`). Dve podoby, aby bol stav stále na očiach a nič sa neopakovalo:
+
+**1. Ukazovateľ v hlavičke** (`HeaderTracker`, na každej stránke, desktop aj mobil):
+krúžok, ktorého oblúk ukazuje pokrytie fixných nákladov aktuálneho mesiaca; v strede **fajka**
+(odkladá včas alebo pokryté, šalviová), **výkričník** (trochu pozadu, medový) alebo pomlčka (bez
+fixných nákladov), číslo sa nezobrazuje a terakotové koliesko s počtom úloh. Na desktope vedľa
+toho „Listopad · Odkládáš včas“. Klik otvorí detail: mesiac a stav, pás pokrytia s týždňami, veta
+o stave, zaplatené platby, **peniaze obchodu a na nákupy (teraz)** a čo čaká. Odkazy „Vyřídit
+úkoly“ (aktuálny týždeň) a „Detail měsíce“.
+
+**2. Karta na stránke Mesiac** (`MonthOverviewCard`, pre zobrazený mesiac, aj minulé/budúce):
+„Fixní náklady“ + odznak **Pokryto / Odkládáš včas / Trochu pozadu** (pri skončenom mesiaci
+„Něco chybělo“), percento a „odloženo X z Y“, pás so zárezom na každý týždeň a terakotovou
+značkou plánu, bodky týždňov (uzavretý ✓, neuzavretý medovo, aktuálny terakotovo), veta o stave
+a prebytok/manko z minula. Pod tým čísla mesiaca: tržby (s tempom oproti minulému mesiacu),
+výdaje, prodavačce a **Měsíc zatím / celkem** s „Jak se to počítá“ (nahradili samostatné
+dlaždice).
+
+Pravidlá:
+
+- Pokrytie počíta iba odložené peniaze (uzávierky + Zásilkovna) mínus fixné náklady minulých
+  mesiacov, takže neskáče pri zaplatení.
+- „Odkládáš včas“ = odložené ≥ mesačné fixné × skončené týždne / týždne mesiaca, teda na konci
+  mesiaca bude na fixné náklady dosť.
+- Obdobie len „Ještě 2 týdny do konce měsíce“ / „Poslední týden měsíce“.
+- **Měsíc zatím / celkem** je zelené (≥ 0) alebo červené (< 0) cez tokeny `--positive` /
+  `--negative`, jediná výnimka z „žiadnej červenej“ (výslovné prianie Tomáša).
+- Týždeň už nemá samostatnú kartu peňazí ani veľký prehľad; stav mesiaca je v hlavičke.
 
 ----------------------------------------------------------------------------------------- | ----------------------------------------------------------- | --------------------------- |
 | **Neuzavřený týden** „Týden 45 není uzavřený“ | minulý týždeň bez uzávierky | warning |
@@ -268,9 +354,9 @@ Mobil: **spodná lišta** _Týden · Měsíc · [+] · Přehled_, obsah v jednom
 └──────────────────────────────────────────┴─────────────────────────────────┘
 ```
 
-Poradie podľa priority (na mobile pod sebou): **upozornenia → dlaždice týždňa → deň po dni →
-odporúčaná výplata → peniaze obchodu → fixné náklady**. Na desktope ľavý stĺpec (prvé tri) a pravý
-(posledné tri).
+Poradie podľa priority (na mobile pod sebou): **úlohy → dlaždice týždňa → deň po dni →
+odporúčaná výplata → fixné náklady**. Na desktope ľavý stĺpec (úlohy, dlaždice, dni) a pravý
+(tabuľa výplaty, fixné náklady). Stav mesiaca a peniaze obchodu sú v ukazovateli v hlavičke.
 
 ### Měsíc (`/month/$monthId`)
 
@@ -298,7 +384,8 @@ stĺpci, na mobile v menu používateľa (spodná lišta nemá miesto).
 
 Fixné náklady (názov, suma, splatnosť, „od měsíce X nová částka“, ukončiť = suma 0 od mesiaca X; **zmazať** sa dá len náklad bez jedinej zaplatenej platby, napr. omylom vytvorený)
 · **otevírací doba**: zaškrtávanie dní v týždni (Po–Ne, teraz Po–Pá) a jeden čas konca pracovnej
-doby · počáteční stav (dátum otvorenia, odloženo na fixní, na nákupy).
+doby · **upozornění**: zapnúť / vypnúť na tomto zariadení, prepínač pre každý druh, poslať skúšku, čas pripomienky tržby
+(viď [Notifikácie](#notifikácie)) · počáteční stav (dátum otvorenia, odloženo na fixní, na nákupy).
 
 ### Modály
 
@@ -346,7 +433,13 @@ settings            (id int pk check (id = 1), opening_date date
                     , opening_fixed numeric(12,2) default 0
                     , opening_purchases numeric(12,2) default 0
                     , open_days smallint[] default '{1,2,3,4,5}'  -- ISO dni, 1 = Po
-                    , closing_time time default '18:00')
+                    , closing_time time default '18:00'
+                    , reminder_time time default '20:00')  -- push o chýbajúcej tržbe
+dismissed_alerts    (id text pk, dismissed_at timestamptz)  -- skryté kontroly
+push_subscriptions  (id uuid pk, endpoint text unique, p256dh text, auth text
+                    , user_email text, user_agent text, created_at timestamptz
+                    , muted_kinds text[] default '{}')  -- zariadenia a vypnuté druhy notifikácií
+notification_log    (key text pk, sent_at timestamptz)  -- odoslané notifikácie, iba service role
 allowed_users       (email text pk)
 ```
 
@@ -446,5 +539,4 @@ supabase/
   ([formulár](https://docs.api.dotypos.com/getting-started/)), potom Supabase Edge Function + pg_cron
   stiahne každú noc `GET /v2/clouds/:cloudId/branches/:branchId/sales-report` do `sales`
   (`source = 'dotykacka'`). Secret a refresh token iba v secrets Edge Function.
-- Sobotná push/email notifikácia s odporúčaním.
-- Fotka bločku k výdaju, export CSV, PWA ikona na plochu.
+- Fotka bločku k výdaju, export CSV.

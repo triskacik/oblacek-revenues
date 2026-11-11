@@ -1,4 +1,4 @@
-import { useDeleteOtherIncome, useSaveZasilkovna } from '@/api/otherIncomes'
+import { useDeleteOtherIncome, useRestoreOtherIncome, useSaveZasilkovna } from '@/api/otherIncomes'
 import { useSettings } from '@/api/settings'
 import { HFField, HFSubmit, HookForm } from '@/components'
 import {
@@ -62,6 +62,7 @@ const ZasilkovnaModal = ({ open, onClose, entry, defaultMonth }: Props) => {
 
   const save = useSaveZasilkovna()
   const remove = useDeleteOtherIncome()
+  const restore = useRestoreOtherIncome()
 
   const onSubmit = async (values: z.output<typeof schema>) => {
     const month = inputToDbMonth(values.month)
@@ -78,8 +79,19 @@ const ZasilkovnaModal = ({ open, onClose, entry, defaultMonth }: Props) => {
     if (!entry) return
     try {
       await remove.mutateAsync(entry.id)
-      toast.success('Zásilkovna smazána')
       onClose()
+      toast.success('Zásilkovna smazána', {
+        duration: 10_000,
+        action: {
+          label: 'Vrátit',
+          onClick: () => {
+            restore
+              .mutateAsync(entry)
+              .then(() => toast.success('Vráceno zpět'))
+              .catch(() => toast.error('Vrátit se nepovedlo, zapiš to prosím znovu.'))
+          },
+        },
+      })
     } catch {
       toast.error('Smazat se nepovedlo, zkus to prosím znovu.')
     }

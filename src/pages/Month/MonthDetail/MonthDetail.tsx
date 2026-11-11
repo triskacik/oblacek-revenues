@@ -12,7 +12,13 @@ import {
   shiftMonthId,
 } from '@/utils/weekUtils'
 import { startOfISOWeek } from 'date-fns'
-import { MonthTiles, MonthWeeks, WeeklyChart, ZasilkovnaCard } from './comps'
+import {
+  MonthChecklistBoard,
+  MonthOverviewCard,
+  MonthWeeks,
+  WeeklyChart,
+  ZasilkovnaCard,
+} from './comps'
 
 const MonthDetail = () => {
   const { monthId } = Route.useParams()
@@ -56,7 +62,11 @@ const MonthDetail = () => {
           Některá data se nepodařilo načíst. Zkus obnovit stránku.
         </p>
       ) : null}
-      <MonthTiles inProgress={monthId >= currentMonthId} summary={summary} />
+      {/* Only at the end of a month: what's left, or the celebration when it's all done. */}
+      <div className='mb-6 empty:hidden'>
+        <MonthChecklistBoard ledger={ledger} month={month} />
+      </div>
+      <MonthOverviewCard ledger={ledger} month={month} />
       <div className='mt-6 grid gap-6 lg:grid-cols-5'>
         <div className='flex flex-col gap-6 lg:col-span-3'>
           <MonthWeeks openDays={ledger?.settings.open_days} summary={summary} />

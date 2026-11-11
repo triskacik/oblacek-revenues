@@ -1,12 +1,12 @@
 import { AlertsPanel, Main, PageHeader, PeriodNav } from '@/components'
-import useLedger from '@/hooks/useLedger'
+import useShopStatus from '@/hooks/useShopStatus'
 import FixedCostsBoard from '@/pages/comps/FixedCostsBoard/FixedCostsBoard'
 import { Route } from '@/routes/(app)/week/$weekId'
 import { toDbDate } from '@/utils/dateUtils'
 import { getWeekMonth } from '@/utils/envelopeUtils'
 import { formatWeekRange, getCurrentWeekId, parseWeekId, shiftWeekId } from '@/utils/weekUtils'
 import { addDays } from 'date-fns'
-import { RecommendationBoard, ShopMoneyCard, WeekDays, WeekTotals } from './comps'
+import { RecommendationBoard, WeekDays, WeekTotals } from './comps'
 
 const WeekDetail = () => {
   const { weekId } = Route.useParams()
@@ -17,7 +17,7 @@ const WeekDetail = () => {
   const weekNumber = Number(weekId.split('-W')[1])
   const currentWeekId = getCurrentWeekId()
 
-  const { ledger, isPending, isError } = useLedger()
+  const { ledger, alerts, isPending, isError } = useShopStatus()
   const inWeek = (date: string) => date >= mondayDb && date <= sundayDb
   const sales = ledger?.sales.filter(s => inWeek(s.date)) ?? []
   const expenses = ledger?.expenses.filter(e => inWeek(e.date)) ?? []
@@ -45,12 +45,12 @@ const WeekDetail = () => {
         </p>
       ) : null}
       {/*
-        Order = priority on mobile (columns stack): what to do, the week, day by day,
-        then the payout board, shop money and fixed costs.
+        Order = priority on mobile (columns stack): what to do, the week, day by day, then the payout
+        board and the fixed-cost checklist. How the month is going lives in the header tracker.
       */}
       <div className='grid gap-6 lg:grid-cols-5'>
         <div className='flex flex-col gap-6 lg:col-span-3'>
-          <AlertsPanel ledger={ledger} />
+          <AlertsPanel alerts={alerts} />
           <WeekTotals expenses={expenses} isPending={isPending} sales={sales} />
           <WeekDays
             expenses={expenses}
@@ -68,7 +68,6 @@ const WeekDetail = () => {
             monday={mondayDb}
             weekNumber={weekNumber}
           />
-          <ShopMoneyCard ledger={ledger} />
           <FixedCostsBoard ledger={ledger} month={getWeekMonth(mondayDb)} statusMonday={mondayDb} />
         </div>
       </div>

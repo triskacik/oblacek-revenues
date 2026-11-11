@@ -7,6 +7,7 @@ import { formatMoney, sumMoney } from '@/utils/moneyUtils'
 import { DEFAULT_OPEN_DAYS, formatDayShort, getWeekDays } from '@/utils/weekUtils'
 import { getISODay, isToday } from 'date-fns'
 import { Plus } from 'lucide-react'
+import QuickSaleInput from '../QuickSaleInput/QuickSaleInput'
 
 type Props = {
   monday: Date
@@ -127,7 +128,11 @@ const WeekDays = ({ monday, openDays = DEFAULT_OPEN_DAYS, sales, expenses, isPen
                   ) : (
                     <>
                       {daySales.length === 0 && isOpenDay ? (
-                        <AddButton label='tržba' onClick={() => openSale({ date })} />
+                        date === today ? (
+                          <QuickSaleInput date={date} />
+                        ) : (
+                          <AddButton label='tržba' onClick={() => openSale({ date })} />
+                        )
                       ) : null}
                       <AddButton label='výdaj' onClick={() => openExpense({ date })} />
                     </>

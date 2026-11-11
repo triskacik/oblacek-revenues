@@ -1,5 +1,5 @@
-import { useDeleteExpense, useSaveExpense } from '@/api/expenses'
-import { useDeleteSale, useSaveSale } from '@/api/sales'
+import { useDeleteExpense, useExpenses, useRestoreExpense, useSaveExpense } from '@/api/expenses'
+import { useDeleteSale, useRestoreSale, useSaveSale } from '@/api/sales'
 import { useSettings } from '@/api/settings'
 import { HFField, HFSubmit, HookForm } from '@/components'
 import {
@@ -11,14 +11,16 @@ import {
 } from '@/components/ui'
 import useZodSchemaTypes from '@/hooks/useZodSchemaTypes'
 import { toast } from '@/lib/toast'
+import { cn } from '@/lib/utils'
 import type { Expense, Sale } from '@/types'
 import { parseDbDate, todayDbDate } from '@/utils/dateUtils'
 import { toMoneyInput } from '@/utils/moneyUtils'
+import { getNoteSuggestions } from '@/utils/noteUtils'
 import { formatWeekRange, toWeekId } from '@/utils/weekUtils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { startOfISOWeek } from 'date-fns'
 import { useEffect } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import z from 'zod'
 import DeleteButton from '../DeleteButton/DeleteButton'
 
@@ -76,10 +78,17 @@ const DatedEntryModal = ({ kind, open, onClose, entry, defaultDate }: Props) => 
     })
   }, [open, entry, defaultDate, formMethods])
 
+  const { data: allExpenses } = useExpenses()
+  const suggestions =
+    kind === 'expense' && allExpenses ? getNoteSuggestions(allExpenses, todayDbDate()) : []
+  const currentNote = useWatch({ control: formMethods.control, name: 'note' })
+
   const saveExpense = useSaveExpense()
   const saveSale = useSaveSale()
   const deleteExpense = useDeleteExpense()
   const deleteSale = useDeleteSale()
+  const restoreExpense = useRestoreExpense()
+  const restoreSale = useRestoreSale()
   const save = kind === 'expense' ? saveExpense : saveSale
   const remove = kind === 'expense' ? deleteExpense : deleteSale
 
@@ -101,8 +110,23 @@ const DatedEntryModal = ({ kind, open, onClose, entry, defaultDate }: Props) => 
     if (!entry) return
     try {
       await remove.mutateAsync(entry.id)
-      toast.success(t.deleted)
       onClose()
+      // A slip of the finger on a phone shouldn't cost data: offer to put it back.
+      toast.success(t.deleted, {
+        duration: 10_000,
+        action: {
+          label: 'Vrátit',
+          onClick: () => {
+            const restore =
+              kind === 'expense'
+                ? restoreExpense.mutateAsync(entry as Expense)
+                : restoreSale.mutateAsync(entry as Sale)
+            restore
+              .then(() => toast.success('Vráceno zpět'))
+              .catch(() => toast.error('Vrátit se nepovedlo, zapiš to prosím znovu.'))
+          },
+        },
+      })
     } catch {
       toast.error('Smazat se nepovedlo, zkus to prosím znovu.')
     }
@@ -137,12 +161,38 @@ const DatedEntryModal = ({ kind, open, onClose, entry, defaultDate }: Props) => 
                 min={openingDate ?? undefined}
               />
             </div>
-            <HFField
-              field='note'
-              inputType='text'
-              label='Poznámka'
-              placeholder={t.notePlaceholder}
-            />
+            <div className='flex flex-col gap-2'>
+              <HFField
+                field='note'
+                inputType='text'
+                label='Poznámka'
+                placeholder={t.notePlaceholder}
+              />
+              {suggestions.length > 0 ? (
+                <div className='flex flex-wrap gap-1.5'>
+                  {suggestions.map(note => (
+                    <button
+                      className={cn(
+                        'rounded-full px-2.5 py-1 text-xs font-semibold transition-colors',
+                        currentNote?.trim() === note
+                          ? 'bg-olive text-cream'
+                          : 'bg-secondary text-olive-soft hover:text-olive'
+                      )}
+                      key={note}
+                      type='button'
+                      onClick={() =>
+                        formMethods.setValue('note', note, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        })
+                      }
+                    >
+                      {note}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
             <div className='flex flex-wrap items-center justify-between gap-3'>
               {entry ? (
                 <DeleteButton isPending={remove.isPending} onConfirm={onDelete} />

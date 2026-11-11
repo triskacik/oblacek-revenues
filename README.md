@@ -88,3 +88,60 @@ V Safari otvoriť produkčnú adresu → **Zdieľať → Pridať na plochu**. N�
 (obláčik z loga na krémovom pozadí) sa doplnia samé (`apple-touch-icon`, `apple-mobile-web-app-title`,
 `manifest.webmanifest`). Appka sa otvára vo vlastnom okne bez lišty Safari. Prihlásenie sa v nej
 drží zvlášť od Safari, takže sa treba raz prihlásiť priamo v appke z plochy.
+
+## Notifikácie (push)
+
+Pripomienky na telefón aj laptop (čo chodí a kedy: `docs/DESIGN.md` → Notifikácie). Všetko je
+zadarmo: Web Push (Apple/Google), Supabase Edge Function (free tier 500 000 volaní za mesiac, cron
+ich spotrebuje asi 3 000) a `pg_cron` + `pg_net` v databáze. Migrácia
+`20261112120000_push_notifications.sql` pridala tabuľky aj naplánovaný job a
+`20261113120000_push_muted_kinds.sql` prepínače druhov; obe musia byť spustené pred nasadením funkcie.
+
+1. **Kľúče** (lokálne, nikam ich nevkladaj, privátny kľúč nepatrí do gitu ani do chatu):
+
+   ```bash
+   npx web-push generate-vapid-keys
+   ```
+
+   ```bash
+   openssl rand -hex 32
+   ```
+
+   Prvý príkaz vypíše verejný a privátny VAPID kľúč, druhý náhodný `CRON_SECRET`.
+
+2. **Secrets pre Edge Function** (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` a `SUPABASE_ANON_KEY`
+   dostane funkcia automaticky):
+
+   ```bash
+   npx supabase secrets set VAPID_PUBLIC_KEY=<verejny> VAPID_PRIVATE_KEY=<privatny> VAPID_SUBJECT=mailto:<tvoj-email> CRON_SECRET=<cron-secret>
+   ```
+
+3. **Nasadiť funkciu:**
+
+   ```bash
+   npx supabase functions deploy send-notifications --no-verify-jwt
+   ```
+
+4. **Vault** (Supabase SQL Editor), odkiaľ si cron berie adresu funkcie a rovnaký `CRON_SECRET`:
+
+   ```sql
+   select vault.create_secret('https://<project-ref>.supabase.co/functions/v1', 'oblacek_functions_url');
+   select vault.create_secret('<cron-secret>', 'oblacek_cron_secret');
+   ```
+
+5. **Frontend:** do `.env.local` aj do Vercel Environment Variables pridať
+   `VITE_VAPID_PUBLIC_KEY=<verejny>` a znova nasadiť.
+
+6. Na každom zariadení: **Nastavení → Upozornění → Zapnout**, potom **Poslat zkoušku**. iPhone len
+   v appke pridanej na plochu (iOS 16.4+), Android v Chrome (stačí stránka, alebo Pridať na plochu),
+   počítač v ľubovoľnom modernom prehliadači.
+
+Kontrola, či cron beží (iba čítanie):
+
+```sql
+select status, return_message, start_time from cron.job_run_details order by start_time desc limit 5;
+select status_code, content, created from net._http_response order by created desc limit 5;
+```
+
+Logy funkcie: Supabase → Edge Functions → `send-notifications` → Logs. Každá pripomienka ide von raz
+(kľúč v `notification_log`); zariadenie, ktoré upozornenia zrušilo, sa samo vymaže.

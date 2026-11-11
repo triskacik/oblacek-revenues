@@ -4,7 +4,8 @@ import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { isSupabaseConfigured } from './api/supabaseClient'
 import { PageLoadError, PageNotFound, PagePending, SetupMissing } from './components'
-import { Toaster } from './components/ui'
+import { Toaster, TooltipProvider } from './components/ui'
+import { registerServiceWorker } from './lib/push'
 import { routeTree } from './routeTree.gen'
 import './styles.css'
 
@@ -35,13 +36,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+registerServiceWorker()
+
 const rootElement = document.getElementById('app')!
 if (!rootElement.innerHTML) {
   ReactDOM.createRoot(rootElement).render(
     <StrictMode>
       {isSupabaseConfigured ? (
         <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
+          <TooltipProvider>
+            <RouterProvider router={router} />
+          </TooltipProvider>
           <Toaster position='top-center' />
         </QueryClientProvider>
       ) : (

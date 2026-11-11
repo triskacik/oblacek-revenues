@@ -20,6 +20,21 @@ export type Database = {
         }
         Relationships: []
       }
+      dismissed_alerts: {
+        Row: {
+          dismissed_at: string
+          id: string
+        }
+        Insert: {
+          dismissed_at?: string
+          id: string
+        }
+        Update: {
+          dismissed_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           amount: number
@@ -132,6 +147,21 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_log: {
+        Row: {
+          key: string
+          sent_at: string
+        }
+        Insert: {
+          key: string
+          sent_at?: string
+        }
+        Update: {
+          key?: string
+          sent_at?: string
+        }
+        Relationships: []
+      }
       other_incomes: {
         Row: {
           amount: number
@@ -156,6 +186,39 @@ export type Database = {
           kind?: string
           month?: string
           note?: string | null
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          muted_kinds: string[]
+          p256dh: string
+          user_agent: string | null
+          user_email: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          muted_kinds?: string[]
+          p256dh: string
+          user_agent?: string | null
+          user_email?: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          muted_kinds?: string[]
+          p256dh?: string
+          user_agent?: string | null
+          user_email?: string
         }
         Relationships: []
       }
@@ -191,6 +254,7 @@ export type Database = {
           opening_date: string | null
           opening_fixed: number
           opening_purchases: number
+          reminder_time: string
           updated_at: string
         }
         Insert: {
@@ -200,6 +264,7 @@ export type Database = {
           opening_date?: string | null
           opening_fixed?: number
           opening_purchases?: number
+          reminder_time?: string
           updated_at?: string
         }
         Update: {
@@ -209,6 +274,7 @@ export type Database = {
           opening_date?: string | null
           opening_fixed?: number
           opening_purchases?: number
+          reminder_time?: string
           updated_at?: string
         }
         Relationships: []

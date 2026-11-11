@@ -87,7 +87,7 @@ export const getWeekState = (ledger: Ledger, monday: string) => {
   }
 }
 
-const getMonthsBetween = (fromMonth: string, toMonth: string) => {
+export const getMonthsBetween = (fromMonth: string, toMonth: string) => {
   const months: string[] = []
   for (
     let month = fromMonth;

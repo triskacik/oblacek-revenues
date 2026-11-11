@@ -3,6 +3,7 @@ import useNavItems from '@/hooks/useNavItems'
 import { cn } from '@/lib/utils'
 import { Link } from '@tanstack/react-router'
 import AddMenu from '../AddMenu/AddMenu'
+import HeaderTracker from '../HeaderTracker/HeaderTracker'
 import UserMenu from '../UserMenu/UserMenu'
 
 const AppHeader = () => {
@@ -39,7 +40,8 @@ const AppHeader = () => {
             </Link>
           ))}
         </nav>
-        <div className='flex items-center gap-3'>
+        <div className='flex items-center gap-2 md:gap-3'>
+          <HeaderTracker />
           <div className='hidden md:block'>
             <AddMenu />
           </div>

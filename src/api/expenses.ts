@@ -42,3 +42,18 @@ export const useDeleteExpense = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.expenses.all }),
   })
 }
+
+/**
+ * Puts a just-deleted expense back exactly as it was (same id and created_at), for the
+ * "Vrátit" button in the toast after deleting.
+ */
+export const useRestoreExpense = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (row: Expense) => {
+      const { error } = await supabase.from('expenses').insert(row)
+      if (error) throw error
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.expenses.all }),
+  })
+}

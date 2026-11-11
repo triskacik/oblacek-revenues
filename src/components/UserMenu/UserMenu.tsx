@@ -28,7 +28,8 @@ const UserMenu = () => {
 
   const name: string = user?.user_metadata.full_name ?? user?.email ?? ''
   const firstName = name.split(' ')[0]
-  const avatarUrl: string | undefined = user?.user_metadata.avatar_url
+  const avatarUrl: string | undefined =
+    user?.user_metadata.avatar_url ?? user?.user_metadata.picture
 
   const onSignOut = async () => {
     try {
@@ -42,7 +43,8 @@ const UserMenu = () => {
     <DropdownMenu>
       <DropdownMenuTrigger className='flex items-center gap-2 rounded-full p-1 pr-1 transition-colors hover:bg-secondary md:pr-3'>
         <Avatar className='size-9 border-2 border-tan/60'>
-          <AvatarImage alt={name} src={avatarUrl} />
+          {/* Google photo URLs refuse requests that carry a referrer from other sites (403/429). */}
+          <AvatarImage alt={name} referrerPolicy='no-referrer' src={avatarUrl} />
           <AvatarFallback className='bg-terracotta-soft text-sm font-semibold text-terracotta'>
             {getInitials(name)}
           </AvatarFallback>
